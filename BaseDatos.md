@@ -35,6 +35,21 @@ UPDATE Producto
 SET precio = 2.50 
 WHERE id_producto = 4
 
-SELECT * FROM Producto WHERE id_producto 
+SELECT * FROM Producto WHERE id_producto
+
+
+
+
+--- Tratar de solcuionar
+
+USE [MoodCoffee_DBSur];
+GO
+
+-- Esto le dice a la base de datos que vuelva a aceptar cambios DML en tablas de réplica
+EXEC sp_changesubstatus 
+    @publication = 'P_ReplClienteOperacional', 
+    @article = 'Cliente_Operativo', 
+    @status = 'active';
+GO
 
 ```
