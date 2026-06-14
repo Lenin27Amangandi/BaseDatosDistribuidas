@@ -26,7 +26,9 @@ go
 use MoodCoffee_DBSur
 
 
-SELECT * FROM Producto
+select * from Sede
+select * from Estado_Animo
+select * from Producto
 
 -- 2. Modificar el precio del producto
 UPDATE Producto 
