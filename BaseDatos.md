@@ -52,4 +52,19 @@ EXEC sp_changesubstatus
     @status = 'active';
 GO
 
+
+--- EditarNodoSur
+
+UPDATE Producto 
+SET precio = 4.50 
+WHERE id_producto = 4
+
+UPDATE Sede 
+SET nombre = 'Sede Norte Central' 
+WHERE id_sede = 1;
+
+UPDATE Estado_Animo 
+SET descripcion = 'Productivo y Feliz' 
+WHERE id_estado = 2;
+
 ```
