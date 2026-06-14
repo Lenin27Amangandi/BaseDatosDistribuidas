@@ -23,8 +23,15 @@ GO
 
 
 
-use master
-create database MoodCooffe_BDSUR COLLATE Modern_Spanish_CI_AS
-go
-use MoodCooffe_BDSUR
+
+
+SELECT * FROM Producto
+
+-- 2. Modificar el precio del producto
+UPDATE Producto 
+SET precio = 2.50 
+WHERE id_producto = 4
+
+SELECT * FROM Producto WHERE id_producto 
+
 ```
