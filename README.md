@@ -1,3 +1,8 @@
+# BaseDatosDistribuidas
+Implementación de scripts para bdd
+
+
+```sql
 /--------------------- MoodCooffe_BDSUR ------------------/
 
 -- Esquema de replicaci�n. 
@@ -61,3 +66,5 @@ WHERE id_sede = 1;
 UPDATE Estado_Animo 
 SET descripcion = 'Productivo y Feliz' 
 WHERE id_estado = 2;
+
+```
