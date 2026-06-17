@@ -68,3 +68,23 @@ SET descripcion = 'Productivo y Feliz'
 WHERE id_estado = 2;
 
 ```
+
+```sql
+-- Eliminar la base de datos si existe
+USE master;
+GO
+
+IF DB_ID('Mec') IS NOT NULL
+BEGIN
+    ALTER DATABASE Mec SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE Mec;
+END
+GO
+
+-- Crear base de datos
+CREATE DATABASE Mec COLLATE Modern_Spanish_CI_AS;
+GO
+
+USE Mec;
+GO
+```
