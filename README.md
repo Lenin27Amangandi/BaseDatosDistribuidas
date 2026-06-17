@@ -69,6 +69,8 @@ WHERE id_estado = 2;
 
 ```
 
+## Mecanica
+
 ```sql
 -- Eliminar la base de datos si existe
 USE master;
