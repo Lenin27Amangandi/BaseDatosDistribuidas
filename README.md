@@ -89,4 +89,6 @@ GO
 
 USE Mec;
 GO
+
+sp_helpdb mec
 ```
