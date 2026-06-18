@@ -90,5 +90,46 @@ GO
 USE MEC;
 GO
 
+slect * from Facultad
+
+update Facultad
+Set telef = '9876543210'
+Where IdFac = 'MEC'
+
+
+slect * from Facultad
+
 sp_helpdb mec
+```
+
+## Sistemas
+```sql
+-- Eliminar la base de datos si existe
+USE master;
+GO
+
+IF DB_ID('SIS') IS NOT NULL
+BEGIN
+    ALTER DATABASE SIS SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE SIS;
+END
+GO
+
+-- Crear base de datos
+CREATE DATABASE SIS COLLATE Modern_Spanish_CI_AS;
+GO
+
+USE SIS;
+GO
+
+sp_helpdb SIS
+
+slect * from Facultad
+
+update Facultad
+Set telef = '9876543210'
+Where IdFac = 'SIS'
+
+
+slect * from Facultad
 ```
