@@ -69,3 +69,41 @@ where idfac='MEC'
 select * from materiaMEC
 
 ```
+
+
+## Fragmentacion  MatriculaMecanica
+
+```sql
+create table matriculaMEC
+(
+cc char(10) not null,
+idmat char(3) not null,
+Idfac char(3) not null, -- esto es aniadido
+fechamt date not null,
+valorpag numeric(7,2) not null
+)
+
+-- pk
+alter table matriculaMEC add constraint 
+pk_cc_idmat_idfac primary key (cc,Idmat,idfac)
+
+-- fk
+alter table matriculaMEC add constraint 
+fk_cc_idfac foreign key (cc,idfac) 
+references estudianteMEC(cc,idfac)
+
+--fk
+alter table matriculaMEC add constraint
+fk_idmat_idfac foreign key (Idmat,idfac) 
+references materiaMEC(idmat,idfac)
+
+-- insercciondDerivada
+insert into Mec.dbo.matriculaMEC 
+select cc,idmat,'MEC',fechamt,valorpag
+from facultades.dbo.matricula mfac
+where 
+(select idfac 
+FROM [XANDER27HALF].[Facultades].[dbo].[estudiante] efac
+        where mfac.cc=efac.cc)='MEC'
+
+```
