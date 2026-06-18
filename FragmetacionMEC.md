@@ -100,7 +100,7 @@ references materiaMEC(idmat,idfac)
 -- insercciondDerivada
 insert into Mec.dbo.matriculaMEC 
 select cc,idmat,'MEC',fechamt,valorpag
-from facultades.dbo.matricula mfac
+FROM [XANDER27HALF].[Facultades].[dbo].[matricula] mfac
 where 
 (select idfac 
 FROM [XANDER27HALF].[Facultades].[dbo].[estudiante] efac
