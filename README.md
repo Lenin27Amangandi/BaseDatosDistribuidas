@@ -100,6 +100,8 @@ Where IdFac = 'MEC'
 slect * from Facultad
 
 sp_helpdb mec
+
+EXEC sp_testlinkedserver 'Facultades';
 ```
 
 ## Sistemas
@@ -132,4 +134,5 @@ Where IdFac = 'SIS'
 
 
 slect * from Facultad
+EXEC sp_testlinkedserver 'Facultades';
 ```
