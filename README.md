@@ -1,4 +1,5 @@
 # BaseDatosDistribuidas
+## EQUIPO 3 - SI SE PASA BASEES DE DATOS DISTRIBUIDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAS!!!!!!!!!!!!
 Implementación de scripts para bdd
 
 
