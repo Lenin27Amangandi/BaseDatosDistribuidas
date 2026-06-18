@@ -3,6 +3,8 @@
 
 ```sql
 
+use Mec
+
 /*--------------------------------------------*/
 -- FRAMENTACIONES HORIZONTALES EN MEC
 -- FRAGMENTACION HORIZONTAL PRIMARIA
