@@ -138,3 +138,11 @@ CREATE TABLE Detalle_Consumo
 GO
 ```
 # ETAPA 2. CARGAR DATOS
+
+
+## Testeo Bidereccional Mec
+
+```sql
+use MEC
+Select * from mytable
+```
