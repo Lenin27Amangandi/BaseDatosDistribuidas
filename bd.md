@@ -145,4 +145,11 @@ GO
 ```sql
 use MEC
 Select * from mytable
+
+UPDATE mytable
+SET b = 'UpdateCam from n4',
+    c = '22'
+WHERE a = '00001';
+Select * from mytable
+
 ```
