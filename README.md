@@ -142,3 +142,12 @@ EXEC sp_testlinkedserver 'Facultades';
 SELECT @@SERVERNAME;
 SELECT SERVERPROPERTY('ServerName');
 ```
+
+
+```sql
+UPDATE Cliente_Operativo 
+SET nombre = 'Camila',
+    apellido = 'Nodo Sur'
+WHERE id_cliente = 4
+select * from Cliente_Operativo
+```
