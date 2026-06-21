@@ -113,54 +113,81 @@ INSERT INTO Producto VALUES (3, 'Frappé de Oreo', 'Bebida fría dulce con crema
 INSERT INTO Producto VALUES (4, 'Americano Doble', 'Café negro intenso para despertar', 'Bebida Caliente', 2.00, 3);
 INSERT INTO Producto VALUES (5, 'Capuccino Vainilla', 'Café con leche espumoso y vainilla', 'Bebida Caliente', 2.80, 4);
 
--- IDs de clientes normales y fáciles (1 al 7)
--- CAMBIO: Todos los correos ahora usan el dominio institucional @epn.edu.ec
-INSERT INTO Cliente VALUES (1, 'Lenin', 'Amangandi', '1726543210', '0998765432', 'lenin.amangandi@epn.edu.ec');
-INSERT INTO Cliente VALUES (2, 'Juan', 'Perez', '1700000002', '0990000002', 'juan.perez1@epn.edu.ec'); -- Juan Pérez (Norte)
-INSERT INTO Cliente VALUES (3, 'Juan', 'Perez', '1700000002', '0990000003', 'juan.perez2@epn.edu.ec'); -- Juan Pérez (Sur)
-INSERT INTO Cliente VALUES (4, 'Carlos', 'Lopez', '1700000004', '0990000004', 'carlos.lopez@epn.edu.ec');
-INSERT INTO Cliente VALUES (5, 'Luis', 'Martinez', '1700000006', '0990000006', 'luis.martinez@epn.edu.ec');
-INSERT INTO Cliente VALUES (6, 'Ana', 'Gomez', '1700000008', '0990000008', 'ana.gomez@epn.edu.ec');
-INSERT INTO Cliente VALUES (7, 'Maria', 'Rodriguez', '1700000010', '0990000010', 'maria.rodriguez@epn.edu.ec');
+-- IDs de clientes (Exactamente 12 inserciones: 6 Norte y 6 Sur)
+-- CLIENTES ASOCIADOS A SEDE NORTE (IDs 1 al 6)
+INSERT INTO Cliente VALUES (1, 'Juan', 'Perez', '1700000001', '0990000001', 'juan.perez.norte@epn.edu.ec');
+INSERT INTO Cliente VALUES (2, 'Carlos', 'Lopez', '1700000002', '0990000002', 'carlos.lopez@epn.edu.ec');
+INSERT INTO Cliente VALUES (3, 'Ana', 'Gomez', '1700000003', '0990000003', 'ana.gomez@epn.edu.ec');
+INSERT INTO Cliente VALUES (4, 'David', 'Andrade', '1700000004', '0990000004', 'david.andrade@epn.edu.ec');
+INSERT INTO Cliente VALUES (5, 'Elena', 'Cevallos', '1700000005', '0990000005', 'elena.cevallos@epn.edu.ec');
+INSERT INTO Cliente VALUES (6, 'Francisco', 'Torres', '1700000006', '0990000006', 'francisco.torres@epn.edu.ec');
+
+-- CLIENTES ASOCIADOS A SEDE SUR (IDs 7 al 12)
+INSERT INTO Cliente VALUES (7, 'Lenin', 'Amangandi', '1726543210', '0998765432', 'lenin.amangandi@epn.edu.ec');
+INSERT INTO Cliente VALUES (8, 'Juan', 'Perez', '1700000008', '0990000008', 'juan.perez.sur@epn.edu.ec');
+INSERT INTO Cliente VALUES (9, 'Luis', 'Martinez', '1700000009', '0990000009', 'luis.martinez@epn.edu.ec');
+INSERT INTO Cliente VALUES (10, 'Maria', 'Rodriguez', '1700000010', '0990000010', 'maria.rodriguez@epn.edu.ec');
+INSERT INTO Cliente VALUES (11, 'Gabriela', 'Suarez', '1700000011', '0990000011', 'gabriela.suarez@epn.edu.ec');
+INSERT INTO Cliente VALUES (12, 'Hugo', 'Benavides', '1700000012', '0990000012', 'hugo.benavides@epn.edu.ec');
 
 
---- Ingreso de consumos balanceados (IDs de consumo sencillos del 1 al 7)
+--- Ingreso de consumos balanceados (12 transacciones en total)
 
 -- ==========================================
--- TRANSACCIONES EN SEDE 1 (NORTE)
+-- TRANSACCIONES EN SEDE 1 (NORTE) - Clientes 1 al 6
 -- ==========================================
--- Consumo 1: Juan Perez del Norte (Cliente 2) en Sede Norte (1) compra un Frappé (Producto 3)
-INSERT INTO Consumo VALUES (1, 3.50, '2026-05-31', 2, 1);
+-- Consumo 1: Juan Perez (Cliente 1) compra un Frappé (Producto 3)
+INSERT INTO Consumo VALUES (1, 3.50, '2026-05-31', 1, 1);
 INSERT INTO Detalle_Consumo VALUES (1, 3, 1, 3.50);
 
--- Consumo 2: Carlos Lopez (Cliente 4) en Sede Norte (1) compra un Americano (Producto 4)
-INSERT INTO Consumo VALUES (2, 2.00, '2026-05-31', 4, 1);
+-- Consumo 2: Carlos Lopez (Cliente 2) compra un Americano (Producto 4)
+INSERT INTO Consumo VALUES (2, 2.00, '2026-05-31', 2, 1);
 INSERT INTO Detalle_Consumo VALUES (2, 4, 1, 2.00);
 
--- Consumo 3: Ana Gomez (Cliente 6) en Sede Norte (1) compra un Té (Producto 1)
-INSERT INTO Consumo VALUES (3, 1.50, '2026-06-01', 6, 1);
+-- Consumo 3: Ana Gomez (Cliente 3) compra un Té (Producto 1)
+INSERT INTO Consumo VALUES (3, 1.50, '2026-06-01', 3, 1);
 INSERT INTO Detalle_Consumo VALUES (3, 1, 1, 1.50);
 
-
--- ==========================================
--- TRANSACCIONES EN SEDE 2 (SUR)
--- ==========================================
--- Consumo 4: Lenin (Cliente 1) en Sede Sur (2) compra Té (Producto 1) y Capuccino (Producto 5)
-INSERT INTO Consumo VALUES (4, 4.30, '2026-05-31', 1, 2);
-INSERT INTO Detalle_Consumo VALUES (4, 1, 1, 1.50);
+-- Consumo 4: David Andrade (Cliente 4) compra un Capuccino (Producto 5)
+INSERT INTO Consumo VALUES (4, 2.80, '2026-06-01', 4, 1);
 INSERT INTO Detalle_Consumo VALUES (4, 5, 1, 2.80);
 
--- Consumo 5: El segundo Juan Perez del Sur (Cliente 3) en Sede Sur (2) compra un Frappé (Producto 3)
-INSERT INTO Consumo VALUES (5, 3.50, '2026-05-31', 3, 2);
-INSERT INTO Detalle_Consumo VALUES (5, 3, 1, 3.50);
+-- Consumo 5: Elena Cevallos (Cliente 5) compra un Muffin (Producto 2)
+INSERT INTO Consumo VALUES (5, 2.50, '2026-06-02', 5, 1);
+INSERT INTO Detalle_Consumo VALUES (5, 2, 1, 2.50);
 
--- Consumo 6: Luis Martinez (Cliente 5) en Sede Sur (2) compra un Capuccino (Producto 5)
-INSERT INTO Consumo VALUES (6, 2.80, '2026-06-01', 5, 2);
-INSERT INTO Detalle_Consumo VALUES (6, 5, 1, 2.80);
+-- Consumo 6: Francisco Torres (Cliente 6) compra un Americano (Producto 4)
+INSERT INTO Consumo VALUES (6, 2.00, '2026-06-02', 6, 1);
+INSERT INTO Detalle_Consumo VALUES (6, 4, 1, 2.00);
 
--- Consumo 7: Maria Rodriguez (Cliente 7) en Sede Sur (2) compra 2 Frappés (Producto 3)
-INSERT INTO Consumo VALUES (7, 7.00, '2026-06-02', 7, 2);
-INSERT INTO Detalle_Consumo VALUES (7, 3, 2, 7.00);
+
+-- ==========================================
+-- TRANSACCIONES EN SEDE 2 (SUR) - Clientes 7 al 12
+-- ==========================================
+-- Consumo 7: Lenin Amangandi (Cliente 7) compra Té (Producto 1) y Capuccino (Producto 5)
+INSERT INTO Consumo VALUES (7, 4.30, '2026-05-31', 7, 2);
+INSERT INTO Detalle_Consumo VALUES (7, 1, 1, 1.50);
+INSERT INTO Detalle_Consumo VALUES (7, 5, 1, 2.80);
+
+-- Consumo 8: Juan Perez Sur (Cliente 8) compra un Frappé (Producto 3)
+INSERT INTO Consumo VALUES (8, 3.50, '2026-05-31', 8, 2);
+INSERT INTO Detalle_Consumo VALUES (8, 3, 1, 3.50);
+
+-- Consumo 9: Luis Martinez (Cliente 9) compra un Capuccino (Producto 5)
+INSERT INTO Consumo VALUES (9, 2.80, '2026-06-01', 9, 2);
+INSERT INTO Detalle_Consumo VALUES (9, 5, 1, 2.80);
+
+-- Consumo 10: Maria Rodriguez (Cliente 10) compra 2 Frappés (Producto 3)
+INSERT INTO Consumo VALUES (10, 7.00, '2026-06-02', 10, 2);
+INSERT INTO Detalle_Consumo VALUES (10, 3, 2, 7.00);
+
+-- Consumo 11: Gabriela Suarez (Cliente 11) compra un Muffin (Producto 2)
+INSERT INTO Consumo VALUES (11, 2.50, '2026-06-02', 11, 2);
+INSERT INTO Detalle_Consumo VALUES (11, 2, 1, 2.50);
+
+-- Consumo 12: Hugo Benavides (Cliente 12) compra un Americano (Producto 4)
+INSERT INTO Consumo VALUES (12, 2.00, '2026-06-02', 12, 2);
+INSERT INTO Detalle_Consumo VALUES (12, 4, 1, 2.00);
 
 
 --- Verificación final
