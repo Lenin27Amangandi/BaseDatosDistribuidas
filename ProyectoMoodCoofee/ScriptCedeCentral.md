@@ -112,6 +112,16 @@ INSERT INTO Producto VALUES (2, 'Muffin de Chocolate', 'Postre con extra de caca
 INSERT INTO Producto VALUES (3, 'Frappé de Oreo', 'Bebida fría dulce con crema', 'Bebida Fría', 3.50, 2);
 INSERT INTO Producto VALUES (4, 'Americano Doble', 'Café negro intenso para despertar', 'Bebida Caliente', 2.00, 3);
 INSERT INTO Producto VALUES (5, 'Capuccino Vainilla', 'Café con leche espumoso y vainilla', 'Bebida Caliente', 2.80, 4);
+INSERT INTO Producto VALUES (6,'Té Verde','Infusión natural','Bebida',2.00,6);
+INSERT INTO Producto VALUES (7,'Chocolate Caliente','Chocolate artesanal','Bebida',3.75,7);
+INSERT INTO Producto VALUES (8,'Croissant','Panadería francesa','Panadería',2.20,8);
+INSERT INTO Producto VALUES (9,'Cheesecake','Pastel de queso','Postre',5.50,10);
+INSERT INTO Producto VALUES (10,'Brownie','Brownie de chocolate','Postre',3.20,11);
+INSERT INTO Producto VALUES (11,'Sándwich','Jamón y queso','Comida',4.80,12);
+INSERT INTO Producto VALUES (12,'Wrap de Pollo','Pollo y vegetales','Comida',5.00,13);
+INSERT INTO Producto VALUES (13,'Jugo Natural','Frutas frescas','Bebida',3.00,14);
+INSERT INTO Producto VALUES (14,'Espresso','Café corto','Bebida',2.50,1);
+INSERT INTO Producto VALUES (15,'Latte','Café con leche','Bebida',4.00,4);
 
 -- IDs de clientes (Exactamente 12 inserciones: 6 Norte y 6 Sur)
 -- CLIENTES ASOCIADOS A SEDE NORTE (IDs 1 al 6)
