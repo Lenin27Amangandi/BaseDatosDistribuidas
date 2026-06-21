@@ -102,3 +102,61 @@ select * from Cliente_Operativo
 ```
 
 ## Fragmetacion
+
+```sql
+--- Fragmetacion vertical
+use MoodCoffee_DBNorte
+
+-- ==========================================
+--              Cliente_Datos
+-- ==========================================
+create table Cliente_Datos
+(
+    id_cliente INT NOT NULL,
+    cedula VARCHAR(10) NOT NULL,
+    telefono VARCHAR(15),
+    correo VARCHAR(150)
+)
+--- Pk
+alter table Cliente_Datos add constraint 
+pk_id_cliente primary key (id_cliente)
+
+-- Insertar datos 
+insert into MoodCoffee_DBNorte.dbo.Cliente_Datos
+select id_cliente,cedula,telefono,correo from Moodcoffee_GDB.dbo.Cliente
+
+select * from Cliente_Datos
+
+
+-- ==========================================
+--              Consumo_Financiero
+-- ==========================================
+
+----CREATE TABLE Consumo 
+----(
+----    id_consumo INT NOT NULL,
+----    total DECIMAL(10, 2) NOT NULL,
+----    fecha DATE NOT NULL,
+----    id_cliente INT NOT NULL,
+----    id_sede INT NOT NULL
+----);
+
+
+create table Consumo_Financiero
+(
+    id_consumo INT NOT NULL,
+    total DECIMAL(10, 2) NOT NULL
+)
+
+
+--- Pk
+alter table Consumo_Financiero add constraint 
+pk_id_consumo primary key (id_consumo)
+
+-- Insertar datos 
+insert into MoodCoffee_DBNorte.dbo.Consumo_Financiero
+select id_consumo,total from Moodcoffee_GDB.dbo.Consumo
+
+select * from Consumo_Financiero
+
+```
