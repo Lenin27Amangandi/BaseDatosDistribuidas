@@ -101,6 +101,15 @@ INSERT INTO Estado_Animo VALUES (1, 'Estresado', 'Alta carga de trabajo o estudi
 INSERT INTO Estado_Animo VALUES (2, 'Feliz', 'Estado de ánimo alegre, ideal para compartir o celebrar');
 INSERT INTO Estado_Animo VALUES (3, 'Cansado', 'Baja energía, requiere un impulso de cafeína');
 INSERT INTO Estado_Animo VALUES (4, 'Productivo', 'Enfocado en trabajar o estudiar, alta concentración');
+INSERT INTO Estado_Animo VALUES (5, 'Entusiasmado', 'Cliente muy animado, listo para hacer cosas');
+INSERT INTO Estado_Animo VALUES (6, 'Neutral', 'Estado normal, requiere algo de motivación');
+INSERT INTO Estado_Animo VALUES (7, 'Pensativo', 'Cliente pensando mucho, requiere tiempo para decidir');
+INSERT INTO Estado_Animo VALUES (8, 'Ansioso', 'Cliente inquieto, requiere un lugar tranquilo');
+INSERT INTO Estado_Animo VALUES (9, 'Sorprendido', 'Cliente asombrado, requiere atención rápida');
+INSERT INTO Estado_Animo VALUES (10, 'Agradecido', 'Cliente contento, requiere buen trato');
+INSERT INTO Estado_Animo VALUES (11, 'Inspirado', 'Cliente con buenas ideas, requiere espacio para crear');
+INSERT INTO Estado_Animo VALUES (12, 'Curioso', 'Cliente interesado, requiere más detalles');
+INSERT INTO Estado_Animo VALUES (13, 'Optimista', 'Cliente positivo, requiere seguir así');
 
 -- IDs de sedes normales y fáciles (1 y 2)
 INSERT INTO Sede VALUES (1, 'Sede Norte', 'Quito', 'Av. Amazonas y Gaspar de Villarroel');
