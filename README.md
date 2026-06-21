@@ -138,3 +138,7 @@ Where IdFac = 'SIS'
 slect * from Facultad
 EXEC sp_testlinkedserver 'Facultades';
 ```
+```sql
+SELECT @@SERVERNAME;
+SELECT SERVERPROPERTY('ServerName');
+```
