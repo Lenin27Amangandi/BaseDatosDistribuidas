@@ -217,3 +217,86 @@ SELECT * FROM Cliente;
 SELECT * FROM Consumo;
 SELECT * FROM Detalle_Consumo;
 ```
+
+
+
+
+
+
+
+```sql
+/* ==========================================
+   BD MoodCoffeeDB_Sur
+   ========================================== */
+-- Eliminar si existen
+DROP DATABASE IF EXISTS MoodCoffee_Sur;
+
+-- Nodo 02: Sede Sur
+CREATE DATABASE MoodCoffee_Sur
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+
+USE MoodCoffee_Sur;
+-- Tablas replicadas
+CREATE TABLE Sede(
+    id_sede CHAR(2) PRIMARY KEY,
+    nombre VARCHAR(50),
+    direccion VARCHAR(100),
+    ciudad VARCHAR(50)
+);
+
+CREATE TABLE Estado_Animo(
+    id_estado INT PRIMARY KEY,
+    nombre VARCHAR(50),
+    descripcion VARCHAR(100)
+);
+
+CREATE TABLE Producto(
+    id_producto INT PRIMARY KEY,
+    nombre VARCHAR(50),
+    descripcion VARCHAR(100),
+    tipo VARCHAR(30),
+    precio DECIMAL(10,2),
+    id_estado INT
+);
+
+/*--------------------------------------------*/
+/* PKs FRAGMENTOS NODO SUR */
+/*--------------------------------------------*/
+
+/* Cliente_Operativo */
+ALTER TABLE Cliente_Operativo
+ADD CONSTRAINT pk_cliente_operativo
+PRIMARY KEY (id_cliente);
+
+/* Fragmentación Horizontal Primaria */
+ALTER TABLE Consumo_Operativo_02
+ADD CONSTRAINT pk_consumo_operativo_02
+PRIMARY KEY (id_consumo,id_sede);
+
+/* Fragmentación Horizontal Derivada */
+ALTER TABLE Detalle02
+ADD CONSTRAINT pk_detalle02
+PRIMARY KEY (id_detalle,id_sede);
+
+/*--------------------------------------------*/
+/* FKs NODO SUR */
+/*--------------------------------------------*/
+
+ALTER TABLE Consumo_Operativo_02
+ADD CONSTRAINT fk_consumo02_cliente
+FOREIGN KEY (id_cliente)
+REFERENCES Cliente_Operativo(id_cliente);
+
+ALTER TABLE Detalle02
+ADD CONSTRAINT fk_detalle02_consumo
+FOREIGN KEY (id_consumo,id_sede)
+REFERENCES Consumo_Operativo_02(id_consumo,id_sede);
+
+ALTER TABLE Detalle02
+ADD CONSTRAINT fk_detalle02_producto
+FOREIGN KEY (id_producto)
+REFERENCES Producto(id_producto);
+```
+   
