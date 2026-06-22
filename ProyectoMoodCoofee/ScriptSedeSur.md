@@ -120,3 +120,11 @@ GO
 
 
 ```
+
+```sql
+-- Ejecuta esto en tu base del Sur para pintar la línea inmediatamente
+ALTER TABLE Producto 
+    ADD CONSTRAINT fk_producto_estado_sur FOREIGN KEY (id_estado) 
+    REFERENCES Estado_Animo(id_estado);
+GO
+```
