@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>☕ MoodCoffee — Punto de Venta</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:    #FFF8F0;
+    --blush:    #FFD6D6;
+    --rose:     #F4A7B9;
+    --deep-rose:#D97B8A;
+    --mocha:    #C49A7B;
+    --latte:    #E8CDA8;
+    --espresso: #6B3A2A;
+    --milk:     #FFF0E6;
+    --sage:     #B5D5C5;
+    --lavender: #D8C5E8;
+    --sky:      #C5DAEA;
+    --gold:     #F0C070;
+    --white:    #FFFFFF;
+    --shadow:   rgba(107,58,42,0.12);
+    --border:   #F0D0C0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle, #F4A7B955 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ══════════════ LOGIN SCREEN ══════════════ */
+  #login-screen {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #FFE4E4 0%, #FFF0E6 40%, #E8D5FF 100%);
+    z-index: 100;
+  }
+  #login-screen::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, #F4A7B940 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+  }
+  .login-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 32px;
+    padding: 44px 48px 40px;
+    box-shadow: 0 16px 60px rgba(180,100,120,0.18), 0 0 0 2px var(--blush);
+    width: 440px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes fadeOut { to { opacity: 0; transform: scale(0.96); } }
+
+  .login-logo { font-size: 60px; margin-bottom: 2px; }
+  .login-card h1 { font-family: 'Pacifico', cursive; font-size: 1.9rem; color: var(--espresso); margin-bottom: 2px; }
+  .login-subtitle { font-size: 0.8rem; color: var(--mocha); margin-bottom: 22px; letter-spacing: 0.04em; }
+
+  .login-section-label {
+    font-size: 0.68rem; font-weight: 800; color: var(--mocha);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; text-align: left;
+  }
+
+  .node-select-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .node-select-card {
+    flex: 1; min-width: 100px; border: 2px solid var(--border); border-radius: 16px;
+    padding: 12px 10px; cursor: pointer; text-align: center; background: var(--milk);
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+  }
+  .node-select-card:hover { transform: translateY(-1px); }
+  .node-select-card.active {
+    border-color: var(--deep-rose);
+    background: linear-gradient(135deg, #FFE4E8, #FFF0E6);
+    box-shadow: 0 4px 14px rgba(212,100,130,0.2);
+  }
+  .node-select-icon { font-size: 1.5rem; margin-bottom: 2px; }
+  .node-select-name { font-size: 0.8rem; font-weight: 800; color: var(--espresso); }
+  .node-select-role { font-size: 0.65rem; color: var(--mocha); font-weight: 600; margin-top: 1px; }
+
+  .input-wrap { position: relative; margin-bottom: 14px; }
+  .input-wrap span { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; }
+  .login-input {
+    width: 100%; padding: 13px 16px 13px 44px; border: 2px solid var(--border);
+    border-radius: 16px; font-family: 'Nunito', sans-serif; font-size: 0.92rem; font-weight: 600;
+    color: var(--espresso); background: var(--milk); outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .login-input:focus { border-color: var(--rose); box-shadow: 0 0 0 4px #F4A7B930; }
+
+  .btn-login {
+    width: 100%; padding: 14px; border: none; border-radius: 16px;
+    background: linear-gradient(135deg, var(--rose), var(--deep-rose)); color: white;
+    font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer;
+    margin-top: 6px; box-shadow: 0 6px 20px rgba(212,100,130,0.35);
+    transition: transform 0.15s, box-shadow 0.15s; letter-spacing: 0.02em;
+  }
+  .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(212,100,130,0.45); }
+  .login-hint { margin-top: 16px; font-size: 0.75rem; color: var(--mocha); }
+  .login-hint strong { color: var(--deep-rose); }
+
+  /* ══════════════ MAIN APP ══════════════ */
+  #app { display: none; min-height: 100vh; position: relative; z-index: 1; }
+
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: 230px;
+    background: linear-gradient(180deg, #FFF0F5 0%, #FFF8F0 100%);
+    border-right: 2px solid var(--border);
+    display: flex; flex-direction: column;
+    box-shadow: 3px 0 20px var(--shadow);
+    z-index: 50; overflow-y: auto;
+  }
+  .sidebar-header { padding: 22px 20px 18px; border-bottom: 2px solid var(--border); }
+  .sidebar-logo { font-family: 'Pacifico', cursive; font-size: 1.35rem; color: var(--espresso); display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+  .sidebar-logo span { font-size: 1.5rem; }
+  .session-node-tag {
+    margin-top: 8px; display: inline-block; font-size: 0.68rem; font-weight: 800;
+    padding: 5px 11px; border-radius: 20px; letter-spacing: 0.02em;
+  }
+  .session-node-tag.norte { background: #FFF0E0; color: var(--espresso); border: 1.5px solid var(--mocha); }
+  .session-node-tag.sur   { background: #E0F0FF; color: #1A3A5A; border: 1.5px solid #80AACC; }
+  .session-node-tag.centro { background: #E8FFE8; color: #1A5A1A; border: 1.5px solid #80CC80; }
+
+  .nav { padding: 14px 14px; flex: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 12px 14px; border-radius: 14px; margin-bottom: 4px;
+    font-size: 0.88rem; font-weight: 700; color: var(--espresso);
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  .nav-item .icon { font-size: 1.15rem; width: 22px; text-align: center; }
+  .nav-item:hover { background: var(--milk); transform: translateX(2px); }
+  .nav-item.active { background: linear-gradient(135deg, var(--rose), var(--deep-rose)); color: white; box-shadow: 0 4px 14px rgba(212,100,130,0.3); }
+
+  .sidebar-footer { padding: 14px; border-top: 2px solid var(--border); }
+  .btn-switch-node {
+    width: 100%; margin-bottom: 10px; background: var(--lavender); color: var(--espresso);
+    border: none; border-radius: 12px; padding: 9px; font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 0.78rem; cursor: pointer; transition: transform 0.15s;
+  }
+  .btn-switch-node:hover { transform: translateY(-1px); }
+
+  .user-chip { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--milk); border-radius: 14px; }
+  .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--rose), var(--deep-rose)); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .user-info { flex: 1; overflow: hidden; }
+  .user-name { font-size: 0.8rem; font-weight: 800; color: var(--espresso); white-space: nowrap; }
+  .user-role { font-size: 0.68rem; color: var(--mocha); font-weight: 600; }
+  .btn-logout { background: none; border: none; font-size: 1.1rem; cursor: pointer; transition: transform 0.15s; }
+  .btn-logout:hover { transform: rotate(15deg); }
+
+  /* ── Main content ── */
+  .main { margin-left: 230px; padding: 28px 32px 40px; position: relative; z-index: 1; }
+
+  .page { display: none; animation: fadeIn 0.25s ease; }
+  .page.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
+  .page-title { display: flex; align-items: center; gap: 14px; }
+  .title-icon {
+    width: 52px; height: 52px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--rose), var(--deep-rose));
+    display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+    box-shadow: 0 6px 16px rgba(212,100,130,0.3); flex-shrink: 0;
+  }
+  .page-title h2 { font-family: 'Pacifico', cursive; font-size: 1.55rem; color: var(--espresso); }
+  .page-title p { font-size: 0.82rem; color: var(--mocha); font-weight: 600; margin-top: 1px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 20px; border-radius: 14px; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.15s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: linear-gradient(135deg, var(--rose), var(--deep-rose)); color: white; box-shadow: 0 6px 18px rgba(212,100,130,0.3); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(212,100,130,0.4); }
+  .btn-ghost { background: var(--white); color: var(--espresso); border: 2px solid var(--border); }
+  .btn-ghost:hover { background: var(--milk); }
+  .btn-sm { padding: 7px 13px; font-size: 0.78rem; border-radius: 11px; }
+  .btn-success { background: linear-gradient(135deg, #8FCBA8, #5FA679); color: white; box-shadow: 0 6px 18px rgba(95,166,121,0.3); }
+  .btn-success:hover { transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+  /* ── Search bar ── */
+  .search-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .search-input-wrap { position: relative; flex: 1; min-width: 220px; }
+  .search-input-wrap span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); }
+  .search-input {
+    width: 100%; padding: 11px 14px 11px 38px; border: 2px solid var(--border);
+    border-radius: 14px; font-family: 'Nunito', sans-serif; font-size: 0.86rem; font-weight: 600;
+    color: var(--espresso); background: var(--white); outline: none;
+  }
+  .search-input:focus { border-color: var(--rose); }
+
+  .category-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cat-chip {
+    padding: 8px 16px; border-radius: 20px; border: 2px solid var(--border);
+    background: var(--white); color: var(--espresso); font-weight: 700; font-size: 0.8rem;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .cat-chip.active { background: linear-gradient(135deg, var(--rose), var(--deep-rose)); color: white; border-color: transparent; }
+
+  /* ── Venta layout ── */
+  .venta-layout { display: grid; grid-template-columns: 1fr 360px; gap: 22px; align-items: start; }
+  .menu-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+  }
+  .menu-card {
+    background: var(--white); border: 2px solid var(--border); border-radius: 20px;
+    padding: 16px 14px; cursor: pointer; text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    position: relative;
+  }
+  .menu-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px var(--shadow); border-color: var(--rose); }
+  .menu-card-emoji { font-size: 2.4rem; margin-bottom: 8px; }
+  .menu-card-name { font-size: 0.84rem; font-weight: 800; color: var(--espresso); line-height: 1.25; margin-bottom: 4px; min-height: 2.2em; }
+  .menu-card-price { font-size: 0.95rem; font-weight: 900; color: var(--deep-rose); }
+  .menu-card-mood { font-size: 0.62rem; font-weight: 700; color: var(--mocha); margin-top: 3px; }
+  .menu-card-tag {
+    position: absolute; top: 10px; right: 10px; font-size: 0.6rem; font-weight: 800;
+    padding: 3px 8px; border-radius: 10px; background: var(--sage); color: #2D5A3D;
+  }
+  .menu-card-tag.cold { background: var(--sky); color: #1A4A6A; }
+  .menu-card-tag.sweet { background: var(--blush); color: var(--deep-rose); }
+  .menu-card.unavailable { opacity: 0.4; cursor: not-allowed; }
+  .menu-card.unavailable:hover { transform: none; box-shadow: none; border-color: var(--border); }
+
+  /* ── Carrito ── */
+  .cart-panel {
+    background: var(--white); border: 2px solid var(--border); border-radius: 22px;
+    padding: 20px; position: sticky; top: 20px;
+    box-shadow: 0 10px 30px var(--shadow);
+  }
+  .cart-title { font-family: 'Pacifico', cursive; font-size: 1.2rem; color: var(--espresso); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+  .cart-client-box {
+    background: var(--milk); border-radius: 14px; padding: 10px 12px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px; cursor: pointer; border: 2px dashed var(--border);
+    transition: border-color 0.15s;
+  }
+  .cart-client-box:hover { border-color: var(--rose); }
+  .cart-client-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--lavender); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .cart-client-info { flex: 1; overflow: hidden; }
+  .cart-client-name { font-size: 0.82rem; font-weight: 800; color: var(--espresso); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cart-client-sub { font-size: 0.68rem; color: var(--mocha); font-weight: 600; }
+
+  .cart-items { max-height: 280px; overflow-y: auto; margin-bottom: 14px; }
+  .cart-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .cart-item-emoji { font-size: 1.5rem; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 0.8rem; font-weight: 800; color: var(--espresso); }
+  .cart-item-price { font-size: 0.7rem; color: var(--mocha); font-weight: 600; }
+  .qty-control { display: flex; align-items: center; gap: 6px; }
+  .qty-btn {
+    width: 24px; height: 24px; border-radius: 8px; border: none; background: var(--milk);
+    color: var(--espresso); font-weight: 900; cursor: pointer; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qty-btn:hover { background: var(--blush); }
+  .qty-num { font-size: 0.85rem; font-weight: 800; color: var(--espresso); min-width: 16px; text-align: center; }
+  .cart-item-remove { background: none; border: none; color: var(--deep-rose); cursor: pointer; font-size: 0.95rem; opacity: 0.6; }
+  .cart-item-remove:hover { opacity: 1; }
+
+  .cart-empty { text-align: center; padding: 30px 10px; color: var(--mocha); font-size: 0.85rem; font-weight: 600; }
+  .cart-empty .emoji { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+
+  .cart-total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-top: 2px solid var(--border); margin-bottom: 14px; }
+  .cart-total-label { font-size: 0.9rem; font-weight: 800; color: var(--espresso); }
+  .cart-total-amount { font-family: 'Pacifico', cursive; font-size: 1.5rem; color: var(--deep-rose); }
+
+  /* ── Cards / tables generic ── */
+  .card { background: var(--white); border: 2px solid var(--border); border-radius: 22px; overflow: hidden; box-shadow: 0 6px 20px var(--shadow); margin-bottom: 18px; }
+  .card-header { padding: 16px 20px; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .card-title { font-size: 0.95rem; font-weight: 800; color: var(--espresso); display: flex; align-items: center; gap: 8px; }
+
+  .people-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; padding: 18px 20px; }
+  .person-card { background: var(--milk); border-radius: 16px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; }
+  .person-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--lavender), var(--sky)); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .person-info { flex: 1; overflow: hidden; }
+  .person-name { font-size: 0.86rem; font-weight: 800; color: var(--espresso); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .person-sub { font-size: 0.72rem; color: var(--mocha); font-weight: 600; }
+  .person-actions { display: flex; gap: 4px; }
+
+  .icon-btn { width: 30px; height: 30px; border-radius: 9px; border: 2px solid var(--border); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.15s; flex-shrink: 0; }
+  .icon-btn:hover { background: var(--milk); border-color: var(--rose); }
+  .icon-btn.danger:hover { background: #FFE0E0; border-color: var(--deep-rose); color: var(--deep-rose); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; padding: 12px 20px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mocha); font-weight: 800; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 13px 20px; font-size: 0.85rem; border-bottom: 1px solid var(--border); color: var(--espresso); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--milk); }
+
+  .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 800; padding: 4px 11px; border-radius: 20px; }
+  .pill-pink { background: var(--blush); color: var(--deep-rose); }
+  .pill-green { background: var(--sage); color: #2D5A3D; }
+  .pill-gold { background: var(--gold); color: #7A5000; }
+  .pill-sky { background: var(--sky); color: #1A4A6A; }
+  .pill-lavender { background: var(--lavender); color: #5A2D7A; }
+
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--mocha); }
+  .empty-state .emoji { font-size: 3rem; margin-bottom: 10px; display: block; }
+  .empty-state p { font-size: 0.9rem; font-weight: 700; }
+
+  /* ── Stats cards (inicio) ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--white); border: 2px solid var(--border); border-radius: 20px; padding: 18px 20px; box-shadow: 0 6px 18px var(--shadow); }
+  .stat-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .stat-value { font-family: 'Pacifico', cursive; font-size: 1.6rem; color: var(--espresso); }
+  .stat-label { font-size: 0.72rem; color: var(--mocha); font-weight: 700; margin-top: 2px; }
+
+  .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .quick-action {
+    background: var(--white); border: 2px solid var(--border); border-radius: 20px;
+    padding: 22px 18px; cursor: pointer; text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .quick-action:hover { transform: translateY(-3px); box-shadow: 0 10px 26px var(--shadow); border-color: var(--rose); }
+  .quick-action-emoji { font-size: 2.2rem; margin-bottom: 8px; }
+  .quick-action-title { font-size: 0.9rem; font-weight: 800; color: var(--espresso); }
+  .quick-action-sub { font-size: 0.72rem; color: var(--mocha); font-weight: 600; margin-top: 2px; }
+
+  /* ── Modal ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(107,58,42,0.4); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 26px; width: 480px; max-width: 92vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) both; }
+  .modal-header { padding: 20px 24px; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .modal-title { font-family: 'Pacifico', cursive; font-size: 1.15rem; color: var(--espresso); }
+  .modal-close { background: var(--milk); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
+  .modal-body { padding: 22px 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 2px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 0.76rem; font-weight: 800; color: var(--espresso); margin-bottom: 6px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 11px 14px; border: 2px solid var(--border); border-radius: 13px;
+    font-family: 'Nunito', sans-serif; font-size: 0.86rem; font-weight: 600; color: var(--espresso);
+    background: var(--milk); outline: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--rose); }
+  .form-input:disabled { opacity: 0.6; cursor: not-allowed; }
+  .form-textarea { resize: vertical; min-height: 70px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .emoji-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+  .emoji-opt { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--border); background: var(--milk); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .emoji-opt.selected { border-color: var(--rose); background: var(--blush); }
+
+  /* ── Mood badge ── */
+  .mood-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 800;
+    background: var(--lavender); color: #5A2D7A;
+  }
+
+  /* ── Toast ── */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--espresso); color: white; padding: 14px 22px; border-radius: 16px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: all 0.3s ease; z-index: 300; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { background: #B33A3A; }
+  .toast.success { background: #4F8F6A; }
+
+  /* ── Detalle consumo modal ── */
+  .detalle-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .detalle-table th { text-align: left; padding: 8px 12px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mocha); font-weight: 800; border-bottom: 2px solid var(--border); }
+  .detalle-table td { padding: 10px 12px; font-size: 0.82rem; border-bottom: 1px solid var(--border); color: var(--espresso); }
+
+  .hidden { display: none !important; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--mocha); border-radius: 4px; }
+
+  @media (max-width: 980px) {
+    .venta-layout { grid-template-columns: 1fr; }
+    .cart-panel { position: static; }
+  }
+  @media (max-width: 760px) {
+    .sidebar { width: 100%; height: auto; position: static; }
+    .main { margin-left: 0; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">☕</div>
+    <h1>MoodCoffee</h1>
+    <div class="login-subtitle">PUNTO DE VENTA</div>
+
+    <div class="login-section-label">Tu sede de hoy</div>
+    <div class="node-select-row" id="login-sedes-row">
+      <!-- Se genera dinámicamente -->
+    </div>
+
+    <div class="input-wrap">
+      <span>👤</span>
+      <input class="login-input" id="login-user" type="text" placeholder="Usuario" value="admin">
+    </div>
+    <div class="input-wrap">
+      <span>🔒</span>
+      <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" value="1234">
+    </div>
+    <button class="btn-login" onclick="doLogin()">✨ Empezar turno</button>
+    <div class="login-hint">Usuario: <strong>admin</strong> · Clave: <strong>1234</strong></div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><span>☕</span> MoodCoffee</div>
+      <div class="session-node-tag norte" id="session-node-tag">🏛️ Turno en Sede Norte</div>
+      <div id="sidebar-clock" style="margin-top:8px;font-size:0.62rem;color:var(--mocha);font-weight:700;letter-spacing:0.02em;line-height:1.6;">
+        <div id="clock-fecha"></div>
+        <div>⏱ Conectado: <span id="clock-uptime">00:00:00</span></div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-item active" data-page="inicio" onclick="showPage('inicio')"><span class="icon">🏠</span> Inicio</div>
+      <div class="nav-item" data-page="venta" onclick="showPage('venta')"><span class="icon">🛒</span> Nueva Venta</div>
+      <div class="nav-item" data-page="clientes" onclick="showPage('clientes')"><span class="icon">👥</span> Cliente</div>
+      <div class="nav-item" data-page="historial" onclick="showPage('historial')"><span class="icon">🧾</span> Consumo</div>
+      <div class="nav-item" data-page="menu" onclick="showPage('menu')"><span class="icon">📋</span> Producto</div>
+      <div class="nav-item" data-page="sedes" onclick="showPage('sedes')"><span class="icon">🏛️</span> Sede</div>
+      <div class="nav-item" data-page="estados" onclick="showPage('estados')"><span class="icon">😊</span> Estado de Ánimo</div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-switch-node" onclick="openSwitchSede()">🔁 Cambiar de sede</button>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar-icon">🏛️</div>
+        <div class="user-info">
+          <div class="user-name">Empleado</div>
+          <div class="user-role" id="user-role-text">Sede Norte</div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()" title="Cerrar turno">🚪</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ═══ INICIO ═══ -->
+    <div id="page-inicio" class="page visible">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">🏠</div>
+          <div><h2>¡Buen turno!</h2><p id="inicio-fecha">Hoy es un gran día para servir buen café</p></div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-value" id="stat-ventas-hoy">0</div><div class="stat-label">Consumos registrados</div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value" id="stat-total-hoy">$0.00</div><div class="stat-label">Total vendido</div></div>
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="stat-clientes">0</div><div class="stat-label">Clientes registrados</div></div>
+        <div class="stat-card"><div class="stat-icon">☕</div><div class="stat-value" id="stat-productos">0</div><div class="stat-label">Productos en el menú</div></div>
+      </div>
+
+      <div class="quick-actions">
+        <div class="quick-action" onclick="showPage('venta')">
+          <div class="quick-action-emoji">🛒</div>
+          <div class="quick-action-title">Registrar consumo</div>
+          <div class="quick-action-sub">Cobrar a un cliente</div>
+        </div>
+        <div class="quick-action" onclick="showPage('clientes')">
+          <div class="quick-action-emoji">👥</div>
+          <div class="quick-action-title">Ver clientes</div>
+          <div class="quick-action-sub">Buscar o agregar uno nuevo</div>
+        </div>
+        <div class="quick-action" onclick="showPage('historial')">
+          <div class="quick-action-emoji">🧾</div>
+          <div class="quick-action-title">Ver consumos</div>
+          <div class="quick-action-sub">Revisar consumos anteriores</div>
+        </div>
+        <div class="quick-action" onclick="showPage('menu')">
+          <div class="quick-action-emoji">📋</div>
+          <div class="quick-action-title">Revisar productos</div>
+          <div class="quick-action-sub">Productos disponibles</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NUEVA VENTA ═══ -->
+    <div id="page-venta" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">🛒</div>
+          <div><h2>Nueva Venta</h2><p>Elige los productos y cobra al cliente</p></div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap"><span>🔍</span>
+          <input class="search-input" id="menu-search" type="text" placeholder="Buscar producto..." oninput="renderMenuGrid()">
+        </div>
+      </div>
+      <div class="category-chips" id="category-chips" style="margin-bottom:18px;"></div>
+
+      <div class="venta-layout">
+        <div class="menu-grid" id="menu-grid"></div>
+
+        <div class="cart-panel">
+          <div class="cart-title">🧺 Tu pedido</div>
+
+          <div class="cart-client-box" onclick="openClientPicker()">
+            <div class="cart-client-avatar" id="cart-client-avatar">👤</div>
+            <div class="cart-client-info">
+              <div class="cart-client-name" id="cart-client-name">Elegir cliente</div>
+              <div class="cart-client-sub" id="cart-client-sub">Toca para buscar o registrar</div>
+            </div>
+            <span>›</span>
+          </div>
+
+          <div class="cart-items" id="cart-items"></div>
+
+          <div class="cart-total-row">
+            <div class="cart-total-label">Total</div>
+            <div class="cart-total-amount" id="cart-total">$0.00</div>
+          </div>
+
+          <button class="btn btn-success" style="width:100%;justify-content:center;" id="btn-cobrar" onclick="cobrarVenta()">✅ Cobrar venta</button>
+          <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:8px;" onclick="vaciarCarrito()">🗑️ Vaciar pedido</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CLIENTES ═══ -->
+    <div id="page-clientes" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">👥</div>
+          <div><h2>Clientes</h2><p>Busca o registra a quien quieres atender</p></div>
+        </div>
+        <button class="btn btn-primary" onclick="openClienteModal()">➕ Nuevo Cliente</button>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap"><span>🔍</span>
+          <input class="search-input" id="cliente-search" type="text" placeholder="Buscar por nombre o cédula..." oninput="renderClientesGrid()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="people-grid" id="clientes-grid"></div>
+      </div>
+    </div>
+
+    <!-- ═══ HISTORIAL ═══ -->
+    <div id="page-historial" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">🧾</div>
+          <div><h2>Historial de Consumos</h2><p>Consumos registrados en tu sede</p></div>
+        </div>
+      </div>
+
+      <div class="search-bar" style="align-items:center;">
+        <div class="search-input-wrap"><span>🔍</span>
+          <input class="search-input" id="historial-search" type="text" placeholder="Buscar por nombre de cliente..." oninput="renderHistorial()">
+        </div>
+        <button id="btn-sort-desc" class="btn btn-primary btn-sm" onclick="setHistorialSort('desc')" title="Más reciente primero">📅 Más reciente</button>
+        <button id="btn-sort-asc"  class="btn btn-ghost  btn-sm" onclick="setHistorialSort('asc')"  title="Más antiguo primero">📅 Más antiguo</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">📅 Consumos recientes</div></div>
+        <div id="historial-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Fecha</th><th>Cliente</th><th>Sede</th><th>Productos</th><th>Total</th><th></th></tr></thead>
+            <tbody id="historial-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MENÚ ═══ -->
+    <div id="page-menu" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">📋</div>
+          <div><h2>Menú</h2><p>Productos disponibles para la venta</p></div>
+        </div>
+        <button class="btn btn-primary" onclick="openProductoModal()">➕ Nuevo Producto</button>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap"><span>🔍</span>
+          <input class="search-input" id="producto-search" type="text" placeholder="Buscar producto..." oninput="renderMenuAdminGrid()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="people-grid" id="menu-admin-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SEDES ═══ -->
+    <div id="page-sedes" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">🏛️</div>
+          <div><h2>Sedes</h2><p>Administra las sedes de MoodCoffee</p></div>
+        </div>
+        <button class="btn btn-primary" onclick="openSedeModal()">➕ Nueva Sede</button>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-input-wrap"><span>🔍</span>
+          <input class="search-input" id="sede-search" type="text" placeholder="Buscar por nombre o ciudad..." oninput="renderSedesGrid()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="people-grid" id="sedes-grid" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr));"></div>
+      </div>
+    </div>
+
+    <!-- ═══ ESTADOS DE ÁNIMO ═══ -->
+    <div id="page-estados" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <div class="title-icon">😊</div>
+          <div><h2>Estados de Ánimo</h2><p>Gestiona los estados de ánimo del menú</p></div>
+        </div>
+        <button class="btn btn-primary" onclick="openEstadoModal()">➕ Nuevo Estado</button>
+      </div>
+
+      <div class="card">
+        <div class="people-grid" id="estados-grid" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr));"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════ MODAL: CLIENTE ═══════════════ -->
+<div class="modal-overlay" id="modal-cliente-overlay" onclick="closeModalOnOverlay(event,'modal-cliente-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-cliente-title">✨ Nuevo Cliente</div>
+      <button class="modal-close" onclick="closeModal('modal-cliente-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="cf-nombre" placeholder="María"></div>
+        <div class="form-group"><label class="form-label">Apellido</label><input class="form-input" id="cf-apellido" placeholder="Suárez"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Cédula</label><input class="form-input" id="cf-cedula" placeholder="1712345678" maxlength="10"></div>
+      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" id="cf-telefono" placeholder="0991234567"></div>
+      <div class="form-group"><label class="form-label">Correo electrónico</label><input class="form-input" id="cf-correo" type="email" placeholder="maria@correo.com"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cliente-overlay')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCliente()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: ELEGIR CLIENTE PARA VENTA ═══════════════ -->
+<div class="modal-overlay" id="modal-picker-overlay" onclick="closeModalOnOverlay(event,'modal-picker-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">👤 Elegir Cliente</div>
+      <button class="modal-close" onclick="closeModal('modal-picker-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-input-wrap" style="margin-bottom:14px;"><span>🔍</span>
+        <input class="search-input" id="picker-search" type="text" placeholder="Buscar por nombre o cédula..." oninput="renderPickerList()">
+      </div>
+      <div id="picker-list" style="max-height:280px;overflow-y:auto;"></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:14px;" onclick="closeModal('modal-picker-overlay');openClienteModal(true)">➕ Es un cliente nuevo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: PRODUCTO ═══════════════ -->
+<div class="modal-overlay" id="modal-producto-overlay" onclick="closeModalOnOverlay(event,'modal-producto-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-producto-title">✨ Nuevo Producto</div>
+      <button class="modal-close" onclick="closeModal('modal-producto-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Ícono</label>
+        <div class="emoji-picker" id="emoji-picker"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="pf-nombre" placeholder="Capuchino Vainilla"></div>
+      <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="pf-descripcion" placeholder="Descripción del producto..."></textarea></div>
+      <div class="form-group"><label class="form-label">Categoría / Tipo</label>
+        <select class="form-select" id="pf-tipo">
+          <option value="Bebida Caliente">Bebida Caliente</option>
+          <option value="Bebida Fría">Bebida Fría</option>
+          <option value="Pastelería">Pastelería</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Precio ($)</label><input class="form-input" id="pf-precio" type="number" step="0.01" placeholder="2.50"></div>
+      <div class="form-group"><label class="form-label">Estado de Ánimo asociado</label>
+        <select class="form-select" id="pf-estado-animo">
+          <!-- Generado dinámicamente -->
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-producto-overlay')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarProducto()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: SEDE ═══════════════ -->
+<div class="modal-overlay" id="modal-sede-overlay" onclick="closeModalOnOverlay(event,'modal-sede-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-sede-title">✨ Nueva Sede</div>
+      <button class="modal-close" onclick="closeModal('modal-sede-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre de la sede</label><input class="form-input" id="sf-nombre" placeholder="Sede Norte"></div>
+      <div class="form-group"><label class="form-label">Ciudad</label><input class="form-input" id="sf-ciudad" placeholder="Quito"></div>
+      <div class="form-group"><label class="form-label">Dirección</label><input class="form-input" id="sf-direccion" placeholder="Av. Amazonas N35-17 y Japón"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-sede-overlay')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarSede()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: ESTADO DE ÁNIMO ═══════════════ -->
+<div class="modal-overlay" id="modal-estado-overlay" onclick="closeModalOnOverlay(event,'modal-estado-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-estado-title">✨ Nuevo Estado de Ánimo</div>
+      <button class="modal-close" onclick="closeModal('modal-estado-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre del estado</label><input class="form-input" id="ef-nombre" placeholder="Relajado"></div>
+      <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="ef-descripcion" placeholder="Describe cómo se siente este estado de ánimo..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-estado-overlay')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEstado()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: VER / EDITAR DETALLE CONSUMO ═══════════════ -->
+<div class="modal-overlay" id="modal-detalle-overlay" onclick="closeModalOnOverlay(event,'modal-detalle-overlay')">
+  <div class="modal" style="width:560px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-detalle-title">🧾 Detalle del Consumo</div>
+      <button class="modal-close" onclick="closeModal('modal-detalle-overlay')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-detalle-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-detalle-overlay')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: EDITAR CONSUMO (cabecera) ═══════════════ -->
+<div class="modal-overlay" id="modal-consumo-overlay" onclick="closeModalOnOverlay(event,'modal-consumo-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-consumo-title">✏️ Editar Consumo</div>
+      <button class="modal-close" onclick="closeModal('modal-consumo-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Cliente</label>
+        <select class="form-select" id="cof-cliente"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha</label>
+        <input class="form-input" id="cof-fecha" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total ($) <span style="font-size:0.7rem;color:var(--mocha);font-weight:600;">— se recalcula automáticamente al guardar</span></label>
+        <input class="form-input" id="cof-total" type="number" step="0.01" placeholder="0.00" disabled>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-consumo-overlay')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarConsumo()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: EDITAR LÍNEA DETALLE ═══════════════ -->
+<div class="modal-overlay" id="modal-linea-overlay" onclick="closeModalOnOverlay(event,'modal-linea-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-linea-title">✏️ Editar Línea</div>
+      <button class="modal-close" onclick="closeModal('modal-linea-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Producto</label>
+        <select class="form-select" id="lf-producto"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cantidad</label>
+        <input class="form-input" id="lf-cantidad" type="number" min="1" step="1" placeholder="1">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-linea-overlay')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarLinea()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: CAMBIAR SEDE ═══════════════ -->
+<div class="modal-overlay" id="modal-switch-sede-overlay" onclick="closeModalOnOverlay(event,'modal-switch-sede-overlay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">🔁 Cambiar de Sede</div>
+      <button class="modal-close" onclick="closeModal('modal-switch-sede-overlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.84rem;color:var(--mocha);font-weight:600;margin-bottom:14px;">Selecciona la sede a la que deseas cambiar:</p>
+      <div id="switch-sede-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-text">Listo</span></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║          BACKEND FRAGMENTADO — DISTRIBUTED DATABASE SIMULATION       ║
+// ║  Las interfaces y funciones de la V7 NO se modifican.               ║
+// ║  La capa DB es un proxy que reconstruye vistas desde los fragmentos. ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+
+const EMOJI_OPCIONES = ['☕','🍵','🧋','🥤','🧃','🍰','🧁','🥐','🍪','🍫','🥪','🍩'];
+
+// ════════════════════════════════════════════════════════════════════════
+// FRAGMENTOS FÍSICOS — aquí viven los datos reales distribuidos
+// ════════════════════════════════════════════════════════════════════════
+
+const FRAG = {
+
+  // ── A. FRAGMENTACIÓN VERTICAL (Cliente) ─────────────────────────────
+  // Cliente_Operativo = Π id,nombre,apellido (CLIENTE)
+  // Almacenado en AMBAS sedes (replicación bidireccional)
+  Cliente_Operativo: [
+    { id: 1,  nombre: 'Juan',      apellido: 'Perez'     },
+    { id: 2,  nombre: 'Carlos',    apellido: 'Lopez'     },
+    { id: 3,  nombre: 'Ana',       apellido: 'Gomez'     },
+    { id: 4,  nombre: 'David',     apellido: 'Andrade'   },
+    { id: 5,  nombre: 'Elena',     apellido: 'Cevallos'  },
+    { id: 6,  nombre: 'Francisco', apellido: 'Torres'    },
+    { id: 7,  nombre: 'Lenin',     apellido: 'Amangandi' },
+    { id: 8,  nombre: 'Juan',      apellido: 'Perez'     },
+    { id: 9,  nombre: 'Luis',      apellido: 'Martinez'  },
+    { id: 10, nombre: 'Maria',     apellido: 'Rodriguez' },
+    { id: 11, nombre: 'Gabriela',  apellido: 'Suarez'    },
+    { id: 12, nombre: 'Hugo',      apellido: 'Benavides' }
+  ],
+
+  // Cliente_Datos = Π id,cedula,telefono,correo (CLIENTE)
+  // Solo en nodo central (Sede Norte) — datos sensibles/administrativos
+  Cliente_Datos: [
+    { id: 1,  cedula: '1700000001', telefono: '0990000001', correo: 'juan.perez.norte@epn.edu.ec' },
+    { id: 2,  cedula: '1700000002', telefono: '0990000002', correo: 'carlos.lopez@epn.edu.ec'     },
+    { id: 3,  cedula: '1700000003', telefono: '0990000003', correo: 'ana.gomez@epn.edu.ec'        },
+    { id: 4,  cedula: '1700000004', telefono: '0990000004', correo: 'david.andrade@epn.edu.ec'    },
+    { id: 5,  cedula: '1700000005', telefono: '0990000005', correo: 'elena.cevallos@epn.edu.ec'   },
+    { id: 6,  cedula: '1700000006', telefono: '0990000006', correo: 'francisco.torres@epn.edu.ec' },
+    { id: 7,  cedula: '1726543210', telefono: '0998765432', correo: 'lenin.amangandi@epn.edu.ec'  },
+    { id: 8,  cedula: '1700000008', telefono: '0990000008', correo: 'juan.perez.sur@epn.edu.ec'   },
+    { id: 9,  cedula: '1700000009', telefono: '0990000009', correo: 'luis.martinez@epn.edu.ec'    },
+    { id: 10, cedula: '1700000010', telefono: '0990000010', correo: 'maria.rodriguez@epn.edu.ec'  },
+    { id: 11, cedula: '1700000011', telefono: '0990000011', correo: 'gabriela.suarez@epn.edu.ec'  },
+    { id: 12, cedula: '1700000012', telefono: '0990000012', correo: 'hugo.benavides@epn.edu.ec'   }
+  ],
+
+  // ── B. FRAGMENTACIÓN MIXTA (Consumo) ────────────────────────────────
+
+  // B.1 Fragmentación Vertical Primaria
+  // Consumo_Financiero = Π id_consumo,total (Consumo)
+  // Solo en Sede Norte — para auditoría económica centralizada
+  Consumo_Financiero: [
+    { idConsumo: 1,  total: 3.50 },
+    { idConsumo: 2,  total: 2.00 },
+    { idConsumo: 3,  total: 1.50 },
+    { idConsumo: 4,  total: 2.80 },
+    { idConsumo: 5,  total: 2.50 },
+    { idConsumo: 6,  total: 2.00 },
+    { idConsumo: 7,  total: 4.30 },
+    { idConsumo: 8,  total: 3.50 },
+    { idConsumo: 9,  total: 2.80 },
+    { idConsumo: 10, total: 7.00 },
+    { idConsumo: 11, total: 2.50 },
+    { idConsumo: 12, total: 2.00 }
+  ],
+
+  // Consumo_Operativo_Base = Π id_consumo,fecha,id_sede,id_cliente (Consumo)
+  // Base ligera para fragmentación horizontal posterior
+  Consumo_Operativo_Base: [
+    { idConsumo: 1,  fecha: '2026-05-31', idSede: 1, idCliente: 1  },
+    { idConsumo: 2,  fecha: '2026-05-31', idSede: 1, idCliente: 2  },
+    { idConsumo: 3,  fecha: '2026-06-01', idSede: 1, idCliente: 3  },
+    { idConsumo: 4,  fecha: '2026-06-01', idSede: 1, idCliente: 4  },
+    { idConsumo: 5,  fecha: '2026-06-02', idSede: 1, idCliente: 5  },
+    { idConsumo: 6,  fecha: '2026-06-02', idSede: 1, idCliente: 6  },
+    { idConsumo: 7,  fecha: '2026-05-31', idSede: 2, idCliente: 7  },
+    { idConsumo: 8,  fecha: '2026-05-31', idSede: 2, idCliente: 8  },
+    { idConsumo: 9,  fecha: '2026-06-01', idSede: 2, idCliente: 9  },
+    { idConsumo: 10, fecha: '2026-06-02', idSede: 2, idCliente: 10 },
+    { idConsumo: 11, fecha: '2026-06-02', idSede: 2, idCliente: 11 },
+    { idConsumo: 12, fecha: '2026-06-02', idSede: 2, idCliente: 12 }
+  ],
+
+  // B.2 Fragmentación Horizontal sobre Consumo_Operativo_Base
+  // Consumo_Operativo_01 = σ id_sede=1 (Consumo_Operativo_Base)  → Sede Norte
+  // Consumo_Operativo_02 = σ id_sede=2 (Consumo_Operativo_Base)  → Sede Sur
+  // (Se derivan dinámicamente mediante getConsumoOperativo(sedeId))
+
+  // ── C. FRAGMENTACIÓN HORIZONTAL DERIVADA (Detalle_Consumo) ──────────
+  // Detalle_i = Detalle_Consumo ⋉ Consumo_Operativo_i
+  // Detalle_01 → detalles de consumos de Sede Norte
+  // Detalle_02 → detalles de consumos de Sede Sur
+  // (Se derivan dinámicamente mediante getDetalle(sedeId))
+
+  // Tabla maestra de detalles (origen para los semi-joins derivados)
+  Detalle_Master: [
+    { idDetalle: 1,  idConsumo: 1,  idProducto: 3,  cantidad: 1, subtotal: 3.50 },
+    { idDetalle: 2,  idConsumo: 2,  idProducto: 4,  cantidad: 1, subtotal: 2.00 },
+    { idDetalle: 3,  idConsumo: 3,  idProducto: 1,  cantidad: 1, subtotal: 1.50 },
+    { idDetalle: 4,  idConsumo: 4,  idProducto: 5,  cantidad: 1, subtotal: 2.80 },
+    { idDetalle: 5,  idConsumo: 5,  idProducto: 2,  cantidad: 1, subtotal: 2.50 },
+    { idDetalle: 6,  idConsumo: 6,  idProducto: 4,  cantidad: 1, subtotal: 2.00 },
+    { idDetalle: 7,  idConsumo: 7,  idProducto: 1,  cantidad: 1, subtotal: 1.50 },
+    { idDetalle: 8,  idConsumo: 7,  idProducto: 5,  cantidad: 1, subtotal: 2.80 },
+    { idDetalle: 9,  idConsumo: 8,  idProducto: 3,  cantidad: 1, subtotal: 3.50 },
+    { idDetalle: 10, idConsumo: 9,  idProducto: 5,  cantidad: 1, subtotal: 2.80 },
+    { idDetalle: 11, idConsumo: 10, idProducto: 3,  cantidad: 2, subtotal: 7.00 },
+    { idDetalle: 12, idConsumo: 11, idProducto: 2,  cantidad: 1, subtotal: 2.50 },
+    { idDetalle: 13, idConsumo: 12, idProducto: 4,  cantidad: 1, subtotal: 2.00 }
+  ],
+
+  // ── Tablas unidireccionales (nodo gestor: Norte) ─────────────────────
+  sedes: [
+    { id: 1, nombre: 'Sede Norte', ciudad: 'Quito', direccion: 'Av. Amazonas y Gaspar de Villarroel' },
+    { id: 2, nombre: 'Sede Sur',   ciudad: 'Quito', direccion: 'Av. Maldonado y El Recreo' }
+  ],
+  estadosAnimo: [
+    { id: 1,  nombre: 'Estresado',    descripcion: 'Alta carga de trabajo o estudio, requiere relajación' },
+    { id: 2,  nombre: 'Feliz',        descripcion: 'Estado de ánimo alegre, ideal para compartir o celebrar' },
+    { id: 3,  nombre: 'Cansado',      descripcion: 'Baja energía, requiere un impulso de cafeína' },
+    { id: 4,  nombre: 'Productivo',   descripcion: 'Enfocado en trabajar o estudiar, alta concentración' },
+    { id: 5,  nombre: 'Entusiasmado', descripcion: 'Cliente muy animado, listo para hacer cosas' },
+    { id: 6,  nombre: 'Neutral',      descripcion: 'Estado normal, requiere algo de motivación' },
+    { id: 7,  nombre: 'Pensativo',    descripcion: 'Cliente pensando mucho, requiere tiempo para decidir' },
+    { id: 8,  nombre: 'Ansioso',      descripcion: 'Cliente inquieto, requiere un lugar tranquilo' },
+    { id: 9,  nombre: 'Sorprendido',  descripcion: 'Cliente asombrado, requiere atención rápida' },
+    { id: 10, nombre: 'Agradecido',   descripcion: 'Cliente contento, requiere buen trato' },
+    { id: 11, nombre: 'Inspirado',    descripcion: 'Cliente con buenas ideas, requiere espacio para crear' },
+    { id: 12, nombre: 'Curioso',      descripcion: 'Cliente interesado, requiere más detalles' },
+    { id: 13, nombre: 'Optimista',    descripcion: 'Cliente positivo, requiere seguir así' }
+  ],
+  productos: [
+    { id: 1,  nombre: 'Té de Manzanilla',   descripcion: 'Infusión relajante natural',        tipo: 'Bebida Caliente', precio: 1.50, id_estado_animo: 1,  emoji: '🍵', disponible: true },
+    { id: 2,  nombre: 'Muffin de Chocolate', descripcion: 'Postre con extra de cacao',        tipo: 'Pastelería',      precio: 2.50, id_estado_animo: 1,  emoji: '🧁', disponible: true },
+    { id: 3,  nombre: 'Frappé de Oreo',      descripcion: 'Bebida fría dulce con crema',      tipo: 'Bebida Fría',     precio: 3.50, id_estado_animo: 2,  emoji: '🥤', disponible: true },
+    { id: 4,  nombre: 'Americano Doble',     descripcion: 'Café negro intenso para despertar',tipo: 'Bebida Caliente', precio: 2.00, id_estado_animo: 3,  emoji: '☕', disponible: true },
+    { id: 5,  nombre: 'Capuccino Vainilla',  descripcion: 'Café con leche espumoso y vainilla',tipo:'Bebida Caliente', precio: 2.80, id_estado_animo: 4,  emoji: '☕', disponible: true },
+    { id: 6,  nombre: 'Té Verde',            descripcion: 'Infusión natural',                 tipo: 'Bebida Caliente', precio: 2.00, id_estado_animo: 6,  emoji: '🍵', disponible: true },
+    { id: 7,  nombre: 'Chocolate Caliente',  descripcion: 'Chocolate artesanal',              tipo: 'Bebida Caliente', precio: 3.75, id_estado_animo: 7,  emoji: '🍫', disponible: true },
+    { id: 8,  nombre: 'Croissant',           descripcion: 'Panadería francesa',               tipo: 'Pastelería',      precio: 2.20, id_estado_animo: 8,  emoji: '🥐', disponible: true },
+    { id: 9,  nombre: 'Cheesecake',          descripcion: 'Pastel de queso',                  tipo: 'Pastelería',      precio: 5.50, id_estado_animo: 10, emoji: '🍰', disponible: true },
+    { id: 10, nombre: 'Brownie',             descripcion: 'Brownie de chocolate',             tipo: 'Pastelería',      precio: 3.20, id_estado_animo: 11, emoji: '🍪', disponible: true },
+    { id: 11, nombre: 'Sándwich',            descripcion: 'Jamón y queso',                    tipo: 'Comida',          precio: 4.80, id_estado_animo: 12, emoji: '🥪', disponible: true },
+    { id: 12, nombre: 'Wrap de Pollo',       descripcion: 'Pollo y vegetales',                tipo: 'Comida',          precio: 5.00, id_estado_animo: 13, emoji: '🥙', disponible: true },
+    { id: 13, nombre: 'Jugo Natural',        descripcion: 'Frutas frescas',                   tipo: 'Bebida Fría',     precio: 3.00, id_estado_animo: 5,  emoji: '🧃', disponible: true },
+    { id: 14, nombre: 'Espresso',            descripcion: 'Café corto',                       tipo: 'Bebida Caliente', precio: 2.50, id_estado_animo: 1,  emoji: '☕', disponible: true },
+    { id: 15, nombre: 'Latte',               descripcion: 'Café con leche',                   tipo: 'Bebida Caliente', precio: 4.00, id_estado_animo: 4,  emoji: '☕', disponible: true }
+  ]
+};
+
+// ════════════════════════════════════════════════════════════════════════
+// FUNCIONES DE RECONSTRUCCIÓN — aplican las operaciones relacionales
+// que definen cada fragmento derivado
+// ════════════════════════════════════════════════════════════════════════
+
+// A. Reconstruir Cliente completo (join vertical: Operativo ⋈ Datos)
+function _buildClientes() {
+  return FRAG.Cliente_Operativo.map(op => {
+    const dat = FRAG.Cliente_Datos.find(d => d.id === op.id) || {};
+    return { ...op, cedula: dat.cedula || '', telefono: dat.telefono || '', correo: dat.correo || '' };
+  });
+}
+
+// B. Fragmentación horizontal de Consumo_Operativo_Base
+// Consumo_Operativo_i = σ id_sede=i (Consumo_Operativo_Base)
+function _getConsumoOperativo(sedeId) {
+  return FRAG.Consumo_Operativo_Base.filter(c => c.idSede === sedeId);
+}
+
+// B. Reconstruir Consumo completo (join vertical: Financiero ⋈ Operativo_Base)
+function _buildConsumos() {
+  return FRAG.Consumo_Operativo_Base.map(op => {
+    const fin = FRAG.Consumo_Financiero.find(f => f.idConsumo === op.idConsumo) || { total: 0 };
+    return { idConsumo: op.idConsumo, total: fin.total, fecha: op.fecha, idCliente: op.idCliente, idSede: op.idSede };
+  });
+}
+
+// C. Fragmentación horizontal derivada de Detalle
+// Detalle_i = Detalle_Master ⋉ Consumo_Operativo_i
+function _getDetalle(sedeId) {
+  const idsConsumoSede = new Set(_getConsumoOperativo(sedeId).map(c => c.idConsumo));
+  return FRAG.Detalle_Master.filter(d => idsConsumoSede.has(d.idConsumo));
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// CAPA DE ACCESO — DB es un proxy que expone la misma interfaz que antes
+// pero lee y escribe sobre los fragmentos físicos.
+// Todas las funciones de la V7 siguen usando DB.clientes, DB.consumos,
+// DB.detalleConsumo, etc. sin ningún cambio.
+// ════════════════════════════════════════════════════════════════════════
+
+const DB = {
+
+  // ── Clientes (vista reconstruida desde fragmentos verticales) ─────────
+  get clientes() { return _buildClientes(); },
+  set clientes(arr) {
+    // Persistir cambios de vuelta en los dos fragmentos
+    FRAG.Cliente_Operativo = arr.map(c => ({ id: c.id, nombre: c.nombre, apellido: c.apellido }));
+    FRAG.Cliente_Datos     = arr.map(c => ({ id: c.id, cedula: c.cedula || '', telefono: c.telefono || '', correo: c.correo || '' }));
+  },
+
+  // ── Sedes (unidireccional, nodo gestor Norte) ─────────────────────────
+  get sedes() { return FRAG.sedes; },
+  set sedes(arr) { FRAG.sedes = arr; },
+
+  // ── Estados de Ánimo (unidireccional desde Norte) ─────────────────────
+  get estadosAnimo() { return FRAG.estadosAnimo; },
+  set estadosAnimo(arr) { FRAG.estadosAnimo = arr; },
+
+  // ── Productos (unidireccional desde Norte) ────────────────────────────
+  get productos() { return FRAG.productos; },
+  set productos(arr) { FRAG.productos = arr; },
+
+  // ── Consumos (vista reconstruida: join vertical Financiero ⋈ Operativo)─
+  get consumos() { return _buildConsumos(); },
+  set consumos(arr) {
+    // Persistir cambios de vuelta en los dos fragmentos verticales
+    FRAG.Consumo_Financiero     = arr.map(c => ({ idConsumo: c.idConsumo, total: c.total }));
+    FRAG.Consumo_Operativo_Base = arr.map(c => ({ idConsumo: c.idConsumo, fecha: c.fecha, idSede: c.idSede, idCliente: c.idCliente }));
+  },
+
+  // ── Detalle Consumo (vista reconstruida desde Detalle_Master) ─────────
+  get detalleConsumo() { return FRAG.Detalle_Master; },
+  set detalleConsumo(arr) { FRAG.Detalle_Master = arr; }
+};
+
+// ════════════════════════════════════════════════════════════════════════
+// Contadores de IDs (igual que en V7)
+// ════════════════════════════════════════════════════════════════════════
+let nextClienteId = 13;
+let nextProductoId = 16;
+let nextConsumoId = 13;
+let nextDetalleId = 14;
+let nextSedeId = 3;
+let nextEstadoId = 14;
+
+let currentSedeId = 1;   // idSede seleccionada al iniciar turno
+let currentPage = 'inicio';
+let carrito = [];
+let clienteSeleccionado = null;
+let categoriaActiva = 'Todas';
+let productoEditandoId = null;
+let sedeEditandoId = null;
+let estadoEditandoId = null;
+let emojiSeleccionado = EMOJI_OPCIONES[0];
+let registrandoClienteDesdeVenta = false;
+
+// ═══════════════ HELPERS ═══════════════
+function getSedeActual() { return DB.sedes.find(s => s.id === currentSedeId); }
+function getEstadoAnimo(id) { return DB.estadosAnimo.find(e => e.id === id); }
+
+// ═══════════════ LOGIN ═══════════════
+function renderLoginSedes() {
+  const row = document.getElementById('login-sedes-row');
+  row.innerHTML = DB.sedes.map((s,i) => `
+    <div class="node-select-card ${i===0?'active':''}" id="node-card-${s.id}" onclick="selectLoginNode(${s.id})">
+      <div class="node-select-icon">🏛️</div>
+      <div class="node-select-name">${s.nombre}</div>
+      <div class="node-select-role">${s.ciudad}</div>
+    </div>
+  `).join('');
+  currentSedeId = DB.sedes[0].id;
+}
+
+function selectLoginNode(sedeId) {
+  currentSedeId = sedeId;
+  DB.sedes.forEach(s => {
+    const el = document.getElementById('node-card-' + s.id);
+    if (el) el.classList.toggle('active', s.id === sedeId);
+  });
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value;
+  const p = document.getElementById('login-pass').value;
+  if (u === 'admin' && p === '1234') {
+    document.getElementById('login-screen').style.animation = 'fadeOut 0.4s forwards';
+    setTimeout(() => {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      startClock();
+      applySedeContext();
+      showPage('inicio');
+      showToast('🏛️ Turno iniciado en ' + getSedeActual().nombre, 'success');
+    }, 400);
+  } else {
+    showToast('❌ Usuario o contraseña incorrectos', 'error');
+  }
+}
+
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-screen').style.animation = '';
+  carrito = [];
+  clienteSeleccionado = null;
+  renderLoginSedes();
+  showToast('👋 Turno cerrado', 'success');
+}
+
+function applySedeContext() {
+  const sede = getSedeActual();
+  if (!sede) return;
+  const tagEl = document.getElementById('session-node-tag');
+  const roleEl = document.getElementById('user-role-text');
+  const avatarEl = document.getElementById('user-avatar-icon');
+  tagEl.textContent = '🏛️ Turno en ' + sede.nombre;
+  tagEl.className = 'session-node-tag ' + (currentSedeId === 1 ? 'norte' : 'sur');
+  roleEl.textContent = sede.nombre + ' · ' + sede.ciudad;
+  avatarEl.textContent = '🏛️';
+}
+
+function openSwitchSede() {
+  const list = document.getElementById('switch-sede-list');
+  list.innerHTML = DB.sedes.map(s => `
+    <div class="person-card" style="cursor:pointer;margin-bottom:8px;" onclick="switchSede(${s.id})">
+      <div class="person-avatar">🏛️</div>
+      <div class="person-info">
+        <div class="person-name">${s.nombre}</div>
+        <div class="person-sub">${s.ciudad} · ${s.direccion}</div>
+      </div>
+      ${s.id === currentSedeId ? '<span class="pill pill-pink">Actual</span>' : ''}
+    </div>
+  `).join('');
+  document.getElementById('modal-switch-sede-overlay').classList.add('open');
+}
+
+function switchSede(sedeId) {
+  currentSedeId = sedeId;
+  applySedeContext();
+  carrito = [];
+  clienteSeleccionado = null;
+  closeModal('modal-switch-sede-overlay');
+  renderPage(currentPage);
+  showToast('🏛️ Ahora en turno: ' + getSedeActual().nombre, 'success');
+}
+
+// ═══════════════ NAVEGACIÓN ═══════════════
+function showPage(name) {
+  currentPage = name;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  document.getElementById('page-' + name).classList.add('visible');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === name));
+  renderPage(name);
+}
+
+function renderPage(name) {
+  switch (name) {
+    case 'inicio':    renderInicio(); break;
+    case 'venta':     renderMenuGrid(); renderCarrito(); break;
+    case 'clientes':  renderClientesGrid(); break;
+    case 'historial': renderHistorial(); break;
+    case 'menu':      renderMenuAdminGrid(); break;
+    case 'sedes':     renderSedesGrid(); break;
+    case 'estados':   renderEstadosGrid(); break;
+  }
+}
+
+// ═══════════════ INICIO ═══════════════
+function renderInicio() {
+  const consumosSede = DB.consumos.filter(c => c.idSede === currentSedeId);
+  document.getElementById('stat-ventas-hoy').textContent = consumosSede.length;
+  document.getElementById('stat-total-hoy').textContent = '$' + consumosSede.reduce((s,c)=>s+c.total,0).toFixed(2);
+  document.getElementById('stat-clientes').textContent = DB.clientes.length;
+  document.getElementById('stat-productos').textContent = DB.productos.length;
+  const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const hoy = new Date();
+  const sede = getSedeActual();
+  document.getElementById('inicio-fecha').textContent = `Hoy es ${dias[hoy.getDay()]} · ${sede ? sede.nombre : ''}`;
+}
+
+// ═══════════════ MENÚ (venta) ═══════════════
+function renderCategoryChips() {
+  const categorias = ['Todas', ...new Set(DB.productos.map(p=>p.tipo))];
+  document.getElementById('category-chips').innerHTML = categorias.map(c => `
+    <button class="cat-chip ${c===categoriaActiva?'active':''}" onclick="setCategoria('${c}')">${c}</button>
+  `).join('');
+}
+function setCategoria(c) { categoriaActiva = c; renderCategoryChips(); renderMenuGrid(); }
+
+function tagForTipo(tipo) {
+  if (tipo === 'Bebida Fría') return '<span class="menu-card-tag cold">Frío</span>';
+  if (tipo === 'Pastelería') return '<span class="menu-card-tag sweet">Dulce</span>';
+  return '<span class="menu-card-tag">Caliente</span>';
+}
+
+function renderMenuGrid() {
+  renderCategoryChips();
+  const q = (document.getElementById('menu-search').value || '').toLowerCase();
+  const productos = DB.productos.filter(p =>
+    (categoriaActiva === 'Todas' || p.tipo === categoriaActiva) &&
+    (p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q))
+  );
+  document.getElementById('menu-grid').innerHTML = productos.map(p => {
+    const estado = getEstadoAnimo(p.id_estado_animo);
+    return `
+    <div class="menu-card ${p.disponible ? '' : 'unavailable'}" onclick="${p.disponible ? `agregarAlCarrito(${p.id})` : ''}">
+      ${tagForTipo(p.tipo)}
+      <div class="menu-card-emoji">${p.emoji}</div>
+      <div class="menu-card-name">${p.nombre}</div>
+      <div class="menu-card-price">$${p.precio.toFixed(2)}</div>
+      ${estado ? `<div class="menu-card-mood">😊 ${estado.nombre}</div>` : ''}
+      ${!p.disponible ? '<div style="font-size:0.65rem;color:var(--deep-rose);font-weight:800;margin-top:4px;">Agotado</div>' : ''}
+    </div>`;
+  }).join('') || '<div class="empty-state" style="grid-column:1/-1;"><span class="emoji">🔍</span><p>No encontramos ese producto</p></div>';
+}
+
+// ═══════════════ CARRITO ═══════════════
+function agregarAlCarrito(idProducto) {
+  const item = carrito.find(i => i.id_producto === idProducto);
+  if (item) item.cantidad++;
+  else carrito.push({ id_producto: idProducto, cantidad: 1 });
+  renderCarrito();
+  showToast('🛒 Agregado al pedido', 'success');
+}
+
+function cambiarCantidad(idProducto, delta) {
+  const item = carrito.find(i => i.id_producto === idProducto);
+  if (!item) return;
+  item.cantidad += delta;
+  if (item.cantidad <= 0) carrito = carrito.filter(i => i.id_producto !== idProducto);
+  renderCarrito();
+}
+
+function quitarDelCarrito(idProducto) {
+  carrito = carrito.filter(i => i.id_producto !== idProducto);
+  renderCarrito();
+}
+
+function vaciarCarrito() {
+  if (carrito.length === 0) return;
+  if (!confirm('¿Vaciar todo el pedido actual?')) return;
+  carrito = [];
+  renderCarrito();
+  showToast('🗑️ Pedido vaciado', 'success');
+}
+
+function calcularTotalCarrito() {
+  return carrito.reduce((sum, item) => {
+    const prod = DB.productos.find(p => p.id === item.id_producto);
+    return sum + (prod ? prod.precio * item.cantidad : 0);
+  }, 0);
+}
+
+function renderCarrito() {
+  const cont = document.getElementById('cart-items');
+  if (carrito.length === 0) {
+    cont.innerHTML = `<div class="cart-empty"><span class="emoji">🧺</span>Aún no hay productos<br>en el pedido</div>`;
+  } else {
+    cont.innerHTML = carrito.map(item => {
+      const p = DB.productos.find(pr => pr.id === item.id_producto);
+      if (!p) return '';
+      return `
+        <div class="cart-item">
+          <div class="cart-item-emoji">${p.emoji}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${p.nombre}</div>
+            <div class="cart-item-price">$${p.precio.toFixed(2)} c/u · subtotal: $${(p.precio*item.cantidad).toFixed(2)}</div>
+          </div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="cambiarCantidad(${p.id},-1)">−</button>
+            <span class="qty-num">${item.cantidad}</span>
+            <button class="qty-btn" onclick="cambiarCantidad(${p.id},1)">+</button>
+          </div>
+          <button class="cart-item-remove" onclick="quitarDelCarrito(${p.id})">✕</button>
+        </div>`;
+    }).join('');
+  }
+  document.getElementById('cart-total').textContent = '$' + calcularTotalCarrito().toFixed(2);
+  document.getElementById('btn-cobrar').disabled = carrito.length === 0;
+
+  if (clienteSeleccionado) {
+    document.getElementById('cart-client-avatar').textContent = '🙂';
+    document.getElementById('cart-client-name').textContent = clienteSeleccionado.nombre + ' ' + clienteSeleccionado.apellido;
+    document.getElementById('cart-client-sub').textContent = clienteSeleccionado.cedula ? 'CI: ' + clienteSeleccionado.cedula : (clienteSeleccionado.telefono || 'Toca para cambiar');
+  } else {
+    document.getElementById('cart-client-avatar').textContent = '👤';
+    document.getElementById('cart-client-name').textContent = 'Elegir cliente';
+    document.getElementById('cart-client-sub').textContent = 'Toca para buscar o registrar';
+  }
+}
+
+function cobrarVenta() {
+  if (carrito.length === 0) { showToast('⚠️ Agrega al menos un producto', 'error'); return; }
+  if (!clienteSeleccionado) { showToast('⚠️ Elige primero al cliente', 'error'); openClientPicker(); return; }
+
+  const total = calcularTotalCarrito();
+  const idConsumoNuevo = nextConsumoId++;
+
+  // Crear consumo — escribir directo en fragmentos físicos
+  // Fragmento financiero (Sede Norte, auditoría)
+  FRAG.Consumo_Financiero.unshift({ idConsumo: idConsumoNuevo, total });
+  // Fragmento operativo base (particionado horizontalmente por sede)
+  FRAG.Consumo_Operativo_Base.unshift({
+    idConsumo: idConsumoNuevo,
+    fecha: new Date().toISOString().slice(0,10),
+    idCliente: clienteSeleccionado.id,
+    idSede: currentSedeId
+  });
+
+  // Crear detalles — escritura directa en Detalle_Master
+  // (la fragmentación derivada por sede se computa dinámicamente)
+  carrito.forEach(item => {
+    const prod = DB.productos.find(p => p.id === item.id_producto);
+    FRAG.Detalle_Master.push({
+      idDetalle: nextDetalleId++,
+      idConsumo: idConsumoNuevo,
+      idProducto: item.id_producto,
+      cantidad: item.cantidad,
+      subtotal: prod ? prod.precio * item.cantidad : 0
+    });
+  });
+
+  showToast(`🎉 Consumo cobrado: $${total.toFixed(2)}`, 'success');
+  carrito = [];
+  clienteSeleccionado = null;
+  renderCarrito();
+}
+
+// ═══════════════ ELEGIR CLIENTE (desde venta) ═══════════════
+function openClientPicker() {
+  document.getElementById('picker-search').value = '';
+  renderPickerList();
+  document.getElementById('modal-picker-overlay').classList.add('open');
+}
+
+function renderPickerList() {
+  const q = (document.getElementById('picker-search').value || '').toLowerCase();
+  const lista = DB.clientes.filter(c =>
+    (c.nombre+' '+c.apellido).toLowerCase().includes(q) ||
+    (c.cedula||'').includes(q)
+  );
+  document.getElementById('picker-list').innerHTML = lista.map(c => `
+    <div class="person-card" style="cursor:pointer;margin-bottom:8px;" onclick="elegirClienteParaVenta(${c.id})">
+      <div class="person-avatar">🙂</div>
+      <div class="person-info">
+        <div class="person-name">${c.nombre} ${c.apellido}</div>
+        <div class="person-sub">CI: ${c.cedula || '—'} · ${c.telefono || 'Sin teléfono'}</div>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state"><span class="emoji">🙁</span><p>No encontramos ese cliente</p></div>';
+}
+
+function elegirClienteParaVenta(idCliente) {
+  clienteSeleccionado = DB.clientes.find(c => c.id === idCliente);
+  closeModal('modal-picker-overlay');
+  renderCarrito();
+  showToast('👤 Cliente seleccionado', 'success');
+}
+
+// ═══════════════ CLIENTES (página) ═══════════════
+function renderClientesGrid() {
+  const q = (document.getElementById('cliente-search').value || '').toLowerCase();
+  const lista = DB.clientes.filter(c =>
+    (c.nombre+' '+c.apellido).toLowerCase().includes(q) ||
+    (c.cedula||'').includes(q) ||
+    (c.correo||'').toLowerCase().includes(q)
+  );
+  const esNorte = currentSedeId === 1;
+  document.getElementById('clientes-grid').innerHTML = lista.map(c => `
+    <div class="person-card">
+      <div class="person-avatar">🙂</div>
+      <div class="person-info">
+        <div class="person-name">${c.nombre} ${c.apellido}</div>
+        ${esNorte ? `<div class="person-sub">CI: ${c.cedula || '—'} · ${c.telefono || 'Sin teléfono'}</div>
+        <div class="person-sub" style="font-size:0.66rem;">${c.correo || ''}</div>` :
+        `<div class="person-sub" style="font-size:0.68rem;color:var(--mocha);">Solo nombre y apellido editables en Sede Sur</div>`}
+      </div>
+      <div class="person-actions">
+        <button class="icon-btn" onclick="openClienteModal(false,${c.id})" title="Editar">✎</button>
+        <button class="icon-btn danger" onclick="eliminarCliente(${c.id})" title="Eliminar">✕</button>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state" style="grid-column:1/-1;"><span class="emoji">👥</span><p>No hay clientes que coincidan</p></div>';
+}
+
+function openClienteModal(desdeVenta=false, idEditar=null) {
+  registrandoClienteDesdeVenta = desdeVenta;
+  const c = idEditar ? DB.clientes.find(x=>x.id===idEditar) : null;
+  document.getElementById('modal-cliente-title').textContent = c ? '✏️ Editar Cliente' : '✨ Nuevo Cliente';
+  document.getElementById('cf-nombre').value = c ? c.nombre : '';
+  document.getElementById('cf-apellido').value = c ? c.apellido : '';
+  document.getElementById('cf-cedula').value = c ? (c.cedula||'') : '';
+  document.getElementById('cf-telefono').value = c ? c.telefono : '';
+  document.getElementById('cf-correo').value = c ? (c.correo||'') : '';
+  document.getElementById('modal-cliente-overlay').dataset.editId = idEditar || '';
+
+  // Replicación bidireccional: en Sede Sur, al EDITAR solo nombre y apellido son modificables
+  const esNorte = currentSedeId === 1;
+  const soloNombreApellido = !esNorte && !!idEditar; // Sur editando = restringido
+  document.getElementById('cf-cedula').disabled   = soloNombreApellido;
+  document.getElementById('cf-telefono').disabled = soloNombreApellido;
+  document.getElementById('cf-correo').disabled   = soloNombreApellido;
+
+  // Mostrar advertencia si es Sur y está editando
+  let aviso = document.getElementById('cf-sur-aviso');
+  if (!aviso) {
+    aviso = document.createElement('div');
+    aviso.id = 'cf-sur-aviso';
+    aviso.style.cssText = 'font-size:0.72rem;color:var(--mocha);font-weight:700;background:var(--milk);border-radius:10px;padding:8px 12px;margin-bottom:4px;';
+    document.getElementById('cf-correo').parentNode.after(aviso);
+  }
+  aviso.textContent = soloNombreApellido ? '⚠️ Sede Sur: solo puedes modificar nombre y apellido.' : '';
+  aviso.style.display = soloNombreApellido ? 'block' : 'none';
+
+  document.getElementById('modal-cliente-overlay').classList.add('open');
+}
+
+function guardarCliente() {
+  const nombre   = document.getElementById('cf-nombre').value.trim();
+  const apellido = document.getElementById('cf-apellido').value.trim();
+  const cedula   = document.getElementById('cf-cedula').value.trim();
+  const telefono = document.getElementById('cf-telefono').value.trim();
+  const correo   = document.getElementById('cf-correo').value.trim();
+  if (!nombre || !apellido) { showToast('⚠️ Completa nombre y apellido', 'error'); return; }
+
+  const editId = document.getElementById('modal-cliente-overlay').dataset.editId;
+  const esNorte = currentSedeId === 1;
+  const soloNombreApellido = !esNorte && !!editId;
+
+  if (!soloNombreApellido && !cedula) { showToast('⚠️ La cédula es obligatoria', 'error'); return; }
+
+  if (editId) {
+    const id = Number(editId);
+    // Escribir directo en los fragmentos físicos
+    const op = FRAG.Cliente_Operativo.find(x => x.id === id);
+    if (op) Object.assign(op, { nombre, apellido });
+    if (!soloNombreApellido) {
+      const dat = FRAG.Cliente_Datos.find(x => x.id === id);
+      if (dat) Object.assign(dat, { cedula, telefono, correo });
+    }
+    showToast('✅ Cliente actualizado', 'success');
+  } else {
+    const id = nextClienteId++;
+    FRAG.Cliente_Operativo.push({ id, nombre, apellido });
+    FRAG.Cliente_Datos.push({ id, cedula, telefono, correo });
+    if (registrandoClienteDesdeVenta) {
+      clienteSeleccionado = DB.clientes.find(c => c.id === id);
+      renderCarrito();
+    }
+    showToast('🎉 Cliente registrado', 'success');
+  }
+  closeModal('modal-cliente-overlay');
+  if (currentPage === 'clientes') renderClientesGrid();
+}
+
+function eliminarCliente(id) {
+  if (!confirm('¿Eliminar este cliente?')) return;
+  FRAG.Cliente_Operativo = FRAG.Cliente_Operativo.filter(c => c.id !== id);
+  FRAG.Cliente_Datos     = FRAG.Cliente_Datos.filter(c => c.id !== id);
+  renderClientesGrid();
+  showToast('🗑️ Cliente eliminado', 'success');
+}
+
+// ═══════════════ HISTORIAL ═══════════════
+let historialOrden = 'desc'; // 'asc' | 'desc'
+
+function setHistorialSort(orden) {
+  historialOrden = orden;
+  // Actualizar estilos de botones
+  document.getElementById('btn-sort-desc').className = 'btn btn-sm ' + (orden === 'desc' ? 'btn-primary' : 'btn-ghost');
+  document.getElementById('btn-sort-asc').className  = 'btn btn-sm ' + (orden === 'asc'  ? 'btn-primary' : 'btn-ghost');
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const q = (document.getElementById('historial-search')?.value || '').toLowerCase();
+
+  let consumosSede = DB.consumos.filter(c => {
+    if (c.idSede !== currentSedeId) return false;
+    if (!q) return true;
+    const cliente = DB.clientes.find(cl => cl.id === c.idCliente);
+    const nombre = cliente ? (cliente.nombre + ' ' + cliente.apellido).toLowerCase() : '';
+    return nombre.includes(q);
+  });
+
+  // Ordenar por fecha
+  consumosSede = consumosSede.slice().sort((a, b) => {
+    const da = new Date(a.fecha), db = new Date(b.fecha);
+    return historialOrden === 'desc' ? db - da : da - db;
+  });
+
+  document.getElementById('historial-tbody').innerHTML = consumosSede.map(c => {
+    const cliente = DB.clientes.find(cl => cl.id === c.idCliente);
+    const nombreCliente = cliente ? cliente.nombre + ' ' + cliente.apellido : 'Cliente eliminado';
+    const detalles = DB.detalleConsumo.filter(d => d.idConsumo === c.idConsumo);
+    const productosTxt = detalles.map(d => {
+      const p = DB.productos.find(pr => pr.id === d.idProducto);
+      return p ? `${p.nombre}${d.cantidad>1?' x'+d.cantidad:''}` : '';
+    }).filter(Boolean).join(', ');
+    const sede = DB.sedes.find(s => s.id === c.idSede);
+    return `
+      <tr>
+        <td><span class="pill pill-sky">#${c.idConsumo}</span></td>
+        <td>${c.fecha}</td>
+        <td>${nombreCliente}</td>
+        <td>${sede ? sede.nombre : '—'}</td>
+        <td style="max-width:200px;white-space:normal;font-size:0.78rem;">${productosTxt}</td>
+        <td><span class="pill pill-green">$${c.total.toFixed(2)}</span></td>
+        <td style="display:flex;gap:4px;align-items:center;">
+          <button class="icon-btn" onclick="verDetalleConsumo(${c.idConsumo})" title="Ver / Editar detalle">🔍</button>
+          <button class="icon-btn" onclick="openConsumoModal(${c.idConsumo})" title="Editar consumo">✎</button>
+          <button class="icon-btn danger" onclick="eliminarConsumo(${c.idConsumo})" title="Eliminar consumo">✕</button>
+        </td>
+      </tr>`;
+  }).join('') || `<tr><td colspan="7"><div class="empty-state"><span class="emoji">🧾</span><p>${q ? 'No hay consumos que coincidan con "'+q+'"' : 'Todavía no hay consumos registrados aquí'}</p></div></td></tr>`;
+}
+
+// ═══════════════ CONSUMO — CRUD CABECERA ═══════════════
+let consumoEditandoId = null;
+
+function openConsumoModal(idEditar) {
+  consumoEditandoId = idEditar;
+  const c = DB.consumos.find(x => x.idConsumo === idEditar);
+  if (!c) return;
+
+  // Poblar select de clientes
+  const sel = document.getElementById('cof-cliente');
+  sel.innerHTML = DB.clientes.map(cl =>
+    `<option value="${cl.id}" ${cl.id === c.idCliente ? 'selected' : ''}>${cl.nombre} ${cl.apellido}</option>`
+  ).join('');
+
+  document.getElementById('cof-fecha').value = c.fecha;
+  document.getElementById('cof-total').value = c.total.toFixed(2);
+  document.getElementById('modal-consumo-overlay').classList.add('open');
+}
+
+function guardarConsumo() {
+  const idCliente = parseInt(document.getElementById('cof-cliente').value);
+  const fecha     = document.getElementById('cof-fecha').value;
+  if (!fecha) { showToast('⚠️ La fecha es obligatoria', 'error'); return; }
+
+  // Recalcular total desde los detalles actuales
+  const detalles = FRAG.Detalle_Master.filter(d => d.idConsumo === consumoEditandoId);
+  const total = detalles.reduce((s, d) => s + d.subtotal, 0);
+
+  // Escribir directo en los fragmentos físicos
+  const fin = FRAG.Consumo_Financiero.find(x => x.idConsumo === consumoEditandoId);
+  if (fin) fin.total = total;
+  const op = FRAG.Consumo_Operativo_Base.find(x => x.idConsumo === consumoEditandoId);
+  if (op) Object.assign(op, { idCliente, fecha });
+
+  closeModal('modal-consumo-overlay');
+  renderHistorial();
+  showToast('✅ Consumo actualizado', 'success');
+}
+
+function eliminarConsumo(idConsumo) {
+  if (!confirm('¿Eliminar este consumo y todos sus detalles?')) return;
+  FRAG.Consumo_Financiero     = FRAG.Consumo_Financiero.filter(c => c.idConsumo !== idConsumo);
+  FRAG.Consumo_Operativo_Base = FRAG.Consumo_Operativo_Base.filter(c => c.idConsumo !== idConsumo);
+  FRAG.Detalle_Master         = FRAG.Detalle_Master.filter(d => d.idConsumo !== idConsumo);
+  renderHistorial();
+  showToast('🗑️ Consumo eliminado', 'success');
+}
+
+// ═══════════════ DETALLE CONSUMO — VER + CRUD LÍNEAS ═══════════════
+let detalleConsumoActualId = null;  // consumo que se está viendo
+let lineaEditandoId = null;
+
+function verDetalleConsumo(idConsumo) {
+  detalleConsumoActualId = idConsumo;
+  _renderModalDetalle();
+  document.getElementById('modal-detalle-overlay').classList.add('open');
+}
+
+function _recalcTotalConsumo(idConsumo) {
+  const fin = FRAG.Consumo_Financiero.find(x => x.idConsumo === idConsumo);
+  if (!fin) return;
+  fin.total = FRAG.Detalle_Master.filter(d => d.idConsumo === idConsumo).reduce((s,d) => s + d.subtotal, 0);
+}
+
+function _renderModalDetalle() {
+  const idConsumo = detalleConsumoActualId;
+  const consumo = DB.consumos.find(c => c.idConsumo === idConsumo);
+  if (!consumo) return;
+  const cliente = DB.clientes.find(c => c.id === consumo.idCliente);
+  const sede    = DB.sedes.find(s => s.id === consumo.idSede);
+  const detalles = DB.detalleConsumo.filter(d => d.idConsumo === idConsumo);
+
+  document.getElementById('modal-detalle-body').innerHTML = `
+    <!-- Info cabecera -->
+    <div style="background:var(--milk);border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><div style="font-size:0.68rem;font-weight:800;color:var(--mocha);margin-bottom:2px;">ID CONSUMO</div>
+             <div style="font-size:0.9rem;font-weight:800;color:var(--espresso);">#${consumo.idConsumo}</div></div>
+        <div><div style="font-size:0.68rem;font-weight:800;color:var(--mocha);margin-bottom:2px;">FECHA</div>
+             <div style="font-size:0.9rem;font-weight:800;color:var(--espresso);">${consumo.fecha}</div></div>
+        <div><div style="font-size:0.68rem;font-weight:800;color:var(--mocha);margin-bottom:2px;">CLIENTE</div>
+             <div style="font-size:0.85rem;font-weight:700;color:var(--espresso);">${cliente ? cliente.nombre+' '+cliente.apellido : '—'}</div></div>
+        <div><div style="font-size:0.68rem;font-weight:800;color:var(--mocha);margin-bottom:2px;">SEDE</div>
+             <div style="font-size:0.85rem;font-weight:700;color:var(--espresso);">${sede ? sede.nombre : '—'}</div></div>
+        ${cliente && cliente.cedula ? `<div style="grid-column:1/-1;"><div style="font-size:0.68rem;font-weight:800;color:var(--mocha);margin-bottom:2px;">CÉDULA</div>
+             <div style="font-size:0.85rem;font-weight:700;color:var(--espresso);">${cliente.cedula}</div></div>` : ''}
+      </div>
+    </div>
+
+    <!-- Header líneas -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--espresso);">📋 Líneas del consumo</div>
+      <button class="btn btn-primary btn-sm" onclick="openLineaModal(null,${idConsumo})">➕ Nueva línea</button>
+    </div>
+
+    <!-- Tabla de detalles editable -->
+    <table class="detalle-table">
+      <thead><tr><th>ID</th><th>Producto</th><th>Cant.</th><th>Subtotal</th><th></th></tr></thead>
+      <tbody>
+        ${detalles.length ? detalles.map(d => {
+          const p = DB.productos.find(pr => pr.id === d.idProducto);
+          return `<tr>
+            <td><span class="pill pill-lavender">#${d.idDetalle}</span></td>
+            <td>${p ? p.emoji+' '+p.nombre : '—'}</td>
+            <td>${d.cantidad}</td>
+            <td><strong>$${d.subtotal.toFixed(2)}</strong></td>
+            <td style="display:flex;gap:4px;">
+              <button class="icon-btn" onclick="openLineaModal(${d.idDetalle},${idConsumo})" title="Editar línea">✎</button>
+              <button class="icon-btn danger" onclick="eliminarLinea(${d.idDetalle},${idConsumo})" title="Eliminar línea">✕</button>
+            </td>
+          </tr>`;
+        }).join('') : `<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--mocha);font-size:0.82rem;">Sin líneas registradas</td></tr>`}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" style="text-align:right;font-weight:800;padding:12px 12px 6px;color:var(--mocha);font-size:0.78rem;">TOTAL</td>
+          <td colspan="2" style="padding:12px 12px 6px;"><span class="pill pill-green" style="font-size:0.85rem;">$${consumo.total.toFixed(2)}</span></td>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+}
+
+// ─── CRUD líneas ───
+function openLineaModal(idDetalle, idConsumo) {
+  lineaEditandoId   = idDetalle;
+  detalleConsumoActualId = idConsumo;
+
+  const d = idDetalle ? DB.detalleConsumo.find(x => x.idDetalle === idDetalle) : null;
+
+  document.getElementById('modal-linea-title').textContent = d ? '✏️ Editar Línea' : '➕ Nueva Línea';
+
+  // Poblar select productos
+  const sel = document.getElementById('lf-producto');
+  sel.innerHTML = DB.productos.map(p =>
+    `<option value="${p.id}" ${d && d.idProducto === p.id ? 'selected' : ''}>${p.emoji} ${p.nombre} — $${p.precio.toFixed(2)}</option>`
+  ).join('');
+
+  document.getElementById('lf-cantidad').value = d ? d.cantidad : 1;
+  document.getElementById('modal-linea-overlay').classList.add('open');
+}
+
+function guardarLinea() {
+  const idProducto = parseInt(document.getElementById('lf-producto').value);
+  const cantidad   = parseInt(document.getElementById('lf-cantidad').value);
+  if (!cantidad || cantidad < 1) { showToast('⚠️ La cantidad debe ser al menos 1', 'error'); return; }
+
+  const prod = DB.productos.find(p => p.id === idProducto);
+  if (!prod) return;
+  const subtotal = parseFloat((prod.precio * cantidad).toFixed(2));
+
+  if (lineaEditandoId) {
+    const d = FRAG.Detalle_Master.find(x => x.idDetalle === lineaEditandoId);
+    Object.assign(d, { idProducto, cantidad, subtotal });
+    showToast('✅ Línea actualizada', 'success');
+  } else {
+    FRAG.Detalle_Master.push({ idDetalle: nextDetalleId++, idConsumo: detalleConsumoActualId, idProducto, cantidad, subtotal });
+    showToast('🎉 Línea agregada', 'success');
+  }
+
+  _recalcTotalConsumo(detalleConsumoActualId);
+  closeModal('modal-linea-overlay');
+  _renderModalDetalle();
+  renderHistorial();
+}
+
+function eliminarLinea(idDetalle, idConsumo) {
+  if (!confirm('¿Eliminar esta línea del consumo?')) return;
+  FRAG.Detalle_Master = FRAG.Detalle_Master.filter(d => d.idDetalle !== idDetalle);
+  _recalcTotalConsumo(idConsumo);
+  _renderModalDetalle();
+  renderHistorial();
+  showToast('🗑️ Línea eliminada', 'success');
+}
+
+// ═══════════════ MENÚ (administración de productos) ═══════════════
+function renderMenuAdminGrid() {
+  const q = (document.getElementById('producto-search').value || '').toLowerCase();
+  const lista = DB.productos.filter(p =>
+    p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q)
+  );
+  document.getElementById('menu-admin-grid').innerHTML = lista.map(p => {
+    const estado = getEstadoAnimo(p.id_estado_animo);
+    return `
+    <div class="person-card" style="flex-direction:column;align-items:flex-start;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <div class="person-avatar" style="font-size:1.4rem;">${p.emoji}</div>
+        <div class="person-info">
+          <div class="person-name">${p.nombre}</div>
+          <div class="person-sub">${p.tipo} · $${p.precio.toFixed(2)} ${p.disponible ? '' : '· <span style="color:var(--deep-rose);">Agotado</span>'}</div>
+        </div>
+        <div class="person-actions">
+          <button class="icon-btn" onclick="openProductoModal(${p.id})" title="Editar">✎</button>
+          <button class="icon-btn danger" onclick="eliminarProducto(${p.id})" title="Eliminar">✕</button>
+        </div>
+      </div>
+      ${p.descripcion ? `<div style="font-size:0.72rem;color:var(--mocha);font-weight:600;padding-left:4px;">${p.descripcion}</div>` : ''}
+      ${estado ? `<span class="mood-badge">😊 ${estado.nombre}</span>` : ''}
+    </div>`;
+  }).join('') || '<div class="empty-state" style="grid-column:1/-1;"><span class="emoji">☕</span><p>No hay productos que coincidan</p></div>';
+}
+
+function openProductoModal(idEditar=null) {
+  productoEditandoId = idEditar;
+  const p = idEditar ? DB.productos.find(x=>x.id===idEditar) : null;
+  document.getElementById('modal-producto-title').textContent = p ? '✏️ Editar Producto' : '✨ Nuevo Producto';
+  document.getElementById('pf-nombre').value = p ? p.nombre : '';
+  document.getElementById('pf-descripcion').value = p ? (p.descripcion||'') : '';
+  document.getElementById('pf-tipo').value = p ? p.tipo : 'Bebida Caliente';
+  document.getElementById('pf-precio').value = p ? p.precio : '';
+  emojiSeleccionado = p ? p.emoji : EMOJI_OPCIONES[0];
+
+  // Poblar select de estados de ánimo
+  const selEstado = document.getElementById('pf-estado-animo');
+  selEstado.innerHTML = '<option value="">— Sin estado de ánimo —</option>' +
+    DB.estadosAnimo.map(e => `<option value="${e.id}" ${p && p.id_estado_animo===e.id ? 'selected':''}>${e.nombre}</option>`).join('');
+
+  renderEmojiPicker();
+  document.getElementById('modal-producto-overlay').classList.add('open');
+}
+
+function renderEmojiPicker() {
+  document.getElementById('emoji-picker').innerHTML = EMOJI_OPCIONES.map(e => `
+    <button type="button" class="emoji-opt ${e===emojiSeleccionado?'selected':''}" onclick="elegirEmoji('${e}')">${e}</button>
+  `).join('');
+}
+function elegirEmoji(e) { emojiSeleccionado = e; renderEmojiPicker(); }
+
+function guardarProducto() {
+  const nombre      = document.getElementById('pf-nombre').value.trim();
+  const descripcion = document.getElementById('pf-descripcion').value.trim();
+  const tipo        = document.getElementById('pf-tipo').value;
+  const precio      = parseFloat(document.getElementById('pf-precio').value);
+  const idEstadoAnimo = parseInt(document.getElementById('pf-estado-animo').value) || null;
+
+  if (!nombre || isNaN(precio) || precio <= 0) { showToast('⚠️ Completa nombre y un precio válido', 'error'); return; }
+
+  if (productoEditandoId) {
+    const p = FRAG.productos.find(x => x.id === productoEditandoId);
+    Object.assign(p, { nombre, descripcion, tipo, precio, disponible: true, id_estado_animo: idEstadoAnimo, emoji: emojiSeleccionado });
+    showToast('✅ Producto actualizado', 'success');
+  } else {
+    FRAG.productos.push({ id: nextProductoId++, nombre, descripcion, tipo, precio, disponible: true, id_estado_animo: idEstadoAnimo, emoji: emojiSeleccionado });
+    showToast('🎉 Producto agregado al menú', 'success');
+  }
+  closeModal('modal-producto-overlay');
+  renderMenuAdminGrid();
+}
+
+function eliminarProducto(id) {
+  if (!confirm('¿Eliminar este producto del menú?')) return;
+  FRAG.productos = FRAG.productos.filter(p => p.id !== id);
+  renderMenuAdminGrid();
+  showToast('🗑️ Producto eliminado', 'success');
+}
+
+// ═══════════════ SEDES ═══════════════
+function renderSedesGrid() {
+  const q = (document.getElementById('sede-search').value || '').toLowerCase();
+  const lista = DB.sedes.filter(s =>
+    s.nombre.toLowerCase().includes(q) ||
+    s.ciudad.toLowerCase().includes(q) ||
+    s.direccion.toLowerCase().includes(q)
+  );
+  document.getElementById('sedes-grid').innerHTML = lista.map(s => `
+    <div class="person-card" style="flex-direction:column;align-items:flex-start;gap:6px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <div class="person-avatar">🏛️</div>
+        <div class="person-info">
+          <div class="person-name">${s.nombre}</div>
+          <div class="person-sub">${s.ciudad}</div>
+        </div>
+        <div class="person-actions">
+          <button class="icon-btn" onclick="openSedeModal(${s.id})" title="Editar">✎</button>
+          <button class="icon-btn danger" onclick="eliminarSede(${s.id})" title="Eliminar">✕</button>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--mocha);font-weight:600;padding-left:4px;">📍 ${s.direccion}</div>
+      ${s.id === currentSedeId ? '<span class="pill pill-pink" style="margin-left:4px;">Sede actual</span>' : ''}
+    </div>
+  `).join('') || '<div class="empty-state" style="grid-column:1/-1;"><span class="emoji">🏛️</span><p>No hay sedes que coincidan</p></div>';
+}
+
+function openSedeModal(idEditar=null) {
+  sedeEditandoId = idEditar;
+  const s = idEditar ? DB.sedes.find(x=>x.id===idEditar) : null;
+  document.getElementById('modal-sede-title').textContent = s ? '✏️ Editar Sede' : '✨ Nueva Sede';
+  document.getElementById('sf-nombre').value = s ? s.nombre : '';
+  document.getElementById('sf-ciudad').value = s ? s.ciudad : '';
+  document.getElementById('sf-direccion').value = s ? s.direccion : '';
+  document.getElementById('modal-sede-overlay').classList.add('open');
+}
+
+function guardarSede() {
+  const nombre    = document.getElementById('sf-nombre').value.trim();
+  const ciudad    = document.getElementById('sf-ciudad').value.trim();
+  const direccion = document.getElementById('sf-direccion').value.trim();
+  if (!nombre || !ciudad || !direccion) { showToast('⚠️ Completa todos los campos', 'error'); return; }
+
+  if (sedeEditandoId) {
+    const s = FRAG.sedes.find(x => x.id === sedeEditandoId);
+    Object.assign(s, { nombre, ciudad, direccion });
+    if (s.id === currentSedeId) applySedeContext();
+    showToast('✅ Sede actualizada', 'success');
+  } else {
+    FRAG.sedes.push({ id: nextSedeId++, nombre, ciudad, direccion });
+    showToast('🎉 Sede registrada', 'success');
+  }
+  closeModal('modal-sede-overlay');
+  renderSedesGrid();
+}
+
+function eliminarSede(id) {
+  if (id === currentSedeId) { showToast('⚠️ No puedes eliminar la sede activa', 'error'); return; }
+  if (!confirm('¿Eliminar esta sede?')) return;
+  FRAG.sedes = FRAG.sedes.filter(s => s.id !== id);
+  renderSedesGrid();
+  showToast('🗑️ Sede eliminada', 'success');
+}
+
+// ═══════════════ ESTADOS DE ÁNIMO ═══════════════
+function renderEstadosGrid() {
+  document.getElementById('estados-grid').innerHTML = DB.estadosAnimo.map(e => `
+    <div class="person-card" style="flex-direction:column;align-items:flex-start;gap:6px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <div class="person-avatar" style="background:linear-gradient(135deg,var(--lavender),var(--rose));">😊</div>
+        <div class="person-info">
+          <div class="person-name">${e.nombre}</div>
+          <div class="person-sub">ID: ${e.id}</div>
+        </div>
+        <div class="person-actions">
+          <button class="icon-btn" onclick="openEstadoModal(${e.id})" title="Editar">✎</button>
+          <button class="icon-btn danger" onclick="eliminarEstado(${e.id})" title="Eliminar">✕</button>
+        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--mocha);font-weight:600;padding-left:4px;">${e.descripcion}</div>
+    </div>
+  `).join('') || '<div class="empty-state" style="grid-column:1/-1;"><span class="emoji">😐</span><p>No hay estados de ánimo registrados</p></div>';
+}
+
+function openEstadoModal(idEditar=null) {
+  estadoEditandoId = idEditar;
+  const e = idEditar ? DB.estadosAnimo.find(x=>x.id===idEditar) : null;
+  document.getElementById('modal-estado-title').textContent = e ? '✏️ Editar Estado de Ánimo' : '✨ Nuevo Estado de Ánimo';
+  document.getElementById('ef-nombre').value = e ? e.nombre : '';
+  document.getElementById('ef-descripcion').value = e ? e.descripcion : '';
+  document.getElementById('modal-estado-overlay').classList.add('open');
+}
+
+function guardarEstado() {
+  const nombre      = document.getElementById('ef-nombre').value.trim();
+  const descripcion = document.getElementById('ef-descripcion').value.trim();
+  if (!nombre) { showToast('⚠️ El nombre es obligatorio', 'error'); return; }
+
+  if (estadoEditandoId) {
+    const e = FRAG.estadosAnimo.find(x => x.id === estadoEditandoId);
+    Object.assign(e, { nombre, descripcion });
+    showToast('✅ Estado de ánimo actualizado', 'success');
+  } else {
+    FRAG.estadosAnimo.push({ id: nextEstadoId++, nombre, descripcion });
+    showToast('🎉 Estado de ánimo registrado', 'success');
+  }
+  closeModal('modal-estado-overlay');
+  renderEstadosGrid();
+}
+
+function eliminarEstado(id) {
+  const enUso = FRAG.productos.some(p => p.id_estado_animo === id);
+  if (enUso) { showToast('⚠️ Este estado está en uso por productos del menú', 'error'); return; }
+  if (!confirm('¿Eliminar este estado de ánimo?')) return;
+  FRAG.estadosAnimo = FRAG.estadosAnimo.filter(e => e.id !== id);
+  renderEstadosGrid();
+  showToast('🗑️ Estado de ánimo eliminado', 'success');
+}
+
+// ═══════════════ MODALES (genérico) ═══════════════
+function closeModal(overlayId) { document.getElementById(overlayId).classList.remove('open'); }
+function closeModalOnOverlay(event, overlayId) { if (event.target.id === overlayId) closeModal(overlayId); }
+
+// ═══════════════ TOAST ═══════════════
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg;
+  document.getElementById('toast-icon').textContent = type === 'error' ? '⚠️' : '✅';
+  t.className = 'toast show ' + type;
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════ RELOJ Y TIEMPO CONECTADO ═══════════════
+let sessionStartTime = null;
+
+function startClock() {
+  sessionStartTime = Date.now();
+  function tick() {
+    const now = new Date();
+    const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const fechaStr = `${dias[now.getDay()]} ${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()} · ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    const el = document.getElementById('clock-fecha');
+    if (el) el.textContent = '📅 ' + fechaStr;
+
+    const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+    const hh = String(Math.floor(elapsed / 3600)).padStart(2,'0');
+    const mm = String(Math.floor((elapsed % 3600) / 60)).padStart(2,'0');
+    const ss = String(elapsed % 60).padStart(2,'0');
+    const up = document.getElementById('clock-uptime');
+    if (up) up.textContent = `${hh}:${mm}:${ss}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ═══════════════ INIT ═══════════════
+renderLoginSedes();
+document.getElementById('login-pass').addEventListener('keypress', e => { if (e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>
+
+
