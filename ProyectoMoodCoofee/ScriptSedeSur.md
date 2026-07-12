@@ -233,3 +233,41 @@ ADD CONSTRAINT fk_producto_estado_sur FOREIGN KEY (id_estado)
 REFERENCES Estado_Animo(id_estado);
 GO
 ```
+
+## Testeo de Pk
+
+```sql
+USE MoodCoffee_DBSur;
+GO
+
+-- =========================================================================
+-- 1. Conectar Consumo_Operativo2 con la tabla Sede local del Sur
+-- =========================================================================
+-- (Nota: En tu script actual ya la tienes incluida, pero si necesitas 
+-- ejecutarla de forma aislada o reafirmarla, este es el comando exacto)
+ALTER TABLE Consumo_Operativo2
+ADD CONSTRAINT fk_consumo2_sede FOREIGN KEY (id_sede) 
+REFERENCES Sede(id_sede);
+GO
+
+-- =========================================================================
+-- 2. Conectar Detalle2 con el catálogo local de Producto en el Sur
+-- =========================================================================
+ALTER TABLE Detalle2
+ADD CONSTRAINT fk_detalle2_producto FOREIGN KEY (id_producto) 
+REFERENCES Producto(id_producto);
+GO
+
+
+-- =========================================================================
+-- 3. Conectar Consumo_Operativo2 con Cliente_Operativo
+-- =========================================================================
+
+-- Añadimos la llave foránea en Consumo_Operativo2 apuntando a Cliente_Operativo local
+ALTER TABLE Consumo_Operativo2
+ADD CONSTRAINT fk_consumo2_cliente FOREIGN KEY (id_cliente) 
+REFERENCES Cliente_Operativo(id_cliente);
+GO
+```
+
+
