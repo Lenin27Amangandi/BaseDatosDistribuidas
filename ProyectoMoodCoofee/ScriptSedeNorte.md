@@ -257,3 +257,44 @@ WHERE (
 SELECT * FROM Detalle1;
 
 ```
+
+
+## Fk para las tablas detalle, cliente, etc
+
+```sql
+USE MoodCoffee_DBNorte;
+GO
+
+-- Añadimos la nueva llave foránea en Consumo_Operativo1 para conectarla con Cliente_Datos
+ALTER TABLE Consumo_Operativo1
+ADD CONSTRAINT fk_consumo1_cliente_datos FOREIGN KEY (id_cliente) 
+REFERENCES Cliente_Datos(id_cliente);
+GO
+
+USE MoodCoffee_DBNorte;
+GO
+
+-- Añadimos la llave foránea en Consumo_Operativo1 para conectarla con la tabla Sede
+ALTER TABLE Consumo_Operativo1
+ADD CONSTRAINT fk_consumo1_sede FOREIGN KEY (id_sede) 
+REFERENCES Sede(id_sede);
+GO
+
+USE MoodCoffee_DBNorte;
+GO
+
+-- Añadimos la llave foránea en Detalle1 apuntando al catálogo de Producto
+ALTER TABLE Detalle1
+ADD CONSTRAINT fk_detalle1_producto FOREIGN KEY (id_producto) 
+REFERENCES Producto(id_producto);
+GO
+
+USE MoodCoffee_DBNorte;
+GO
+
+-- Creamos la llave foránea para unir la cabecera operativa con la financiera
+ALTER TABLE Consumo_Operativo1
+ADD CONSTRAINT fk_consumo1_financiero FOREIGN KEY (id_consumo) 
+REFERENCES Consumo_Financiero(id_consumo);
+GO
+```
