@@ -225,55 +225,56 @@ SELECT * FROM Consumo_Operativo1;
 -- ==========================================
 --              Detalle1
 -- ==========================================
--- Crear nuevamente la tabla
-----CREATE TABLE Detalle_Consumo
-----(
-----    id_detalle INT NOT NULL,
-----    id_consumo INT NOT NULL,
-----    cantidad INT NOT NULL,
-----    subtotal DECIMAL(10,2) NOT NULL,
-----    id_producto INT NOT NULL
-----);
-----GO
 
 drop table Detalle1
+
 CREATE TABLE Detalle1 (
-    id_detalle INT NOT NULL,
+    id_linea INT NOT NULL,       -- ¡Cambio aquí!
     id_consumo INT NOT NULL,
-    id_sede INT NOT NULL,  --- Aniadido 
+    id_sede INT NOT NULL,  
     cantidad INT NOT NULL,
     subtotal DECIMAL(10,2) NOT NULL,
     id_producto INT NOT NULL
 );
+GO
 
--- Detallei -- Fragm. horiz. deriva.
-alter table Detalle1 add constraint 
-pk_id_detalle_id_consumo_id_sede primary key (id_detalle,id_consumo,id_sede)
+-- 2. Clave primaria (Adaptada con id_linea)
+ALTER TABLE Detalle1 
+ADD CONSTRAINT pk_id_linea_id_consumo_id_sede PRIMARY KEY (id_linea, id_consumo, id_sede);
+GO
 
-
-alter table Detalle1 add constraint 
-fk_idconsumo_idsede FOREIGN KEY (id_consumo, id_sede)
-references Consumo_Operativo1(id_consumo,id_sede)
+-- 3. Llave foránea (Se mantiene igual porque apunta a la cabecera)
+ALTER TABLE Detalle1 
+ADD CONSTRAINT fk_idconsumo_idsede FOREIGN KEY (id_consumo, id_sede)
+REFERENCES Consumo_Operativo1(id_consumo, id_sede);
+GO
 
 
 -- =========================================================================
--- 5. Inserción de datos aplicando la lógica de Semijoin (⋉)
+-- 4. Inserción de datos aplicando la lógica de Semijoin (⋉)
 -- =========================================================================
-INSERT INTO MoodCoffee_DBNorte.dbo.Detalle1 (id_detalle, id_consumo, id_sede, cantidad, subtotal, id_producto)
+INSERT INTO MoodCoffee_DBNorte.dbo.Detalle1 (id_linea, id_consumo, id_sede, cantidad, subtotal, id_producto)
 SELECT 
-    gdb_det.id_detalle, 
+    gdb_det.id_linea,      -- Buscamos el nuevo nombre que pusiste con sp_rename
     gdb_det.id_consumo, 
-    1, -- Forzamos el ID de la Sede Norte (Sede 1) tal como se hizo en matrículaSIS
+    1, 
     gdb_det.cantidad, 
     gdb_det.subtotal, 
     gdb_det.id_producto
 FROM Moodcoffee_GDB.dbo.Detalle_Consumo gdb_det
+--WHERE 1 IN (
+--    SELECT central_con.id_sede 
+--    FROM Moodcoffee_GDB.dbo.Consumo central_con
+--    WHERE gdb_det.id_consumo = central_con.id_consumo
+--);
+--GO
 WHERE (
     -- Subconsulta correlacionada que emula el Semijoin (⋉) con Consumo_Operativo1
     SELECT central_con.id_sede 
     FROM Moodcoffee_GDB.dbo.Consumo central_con
     WHERE gdb_det.id_consumo = central_con.id_consumo
-) = 1; -- Condición estricta que define a Consumo_Operativo1 (σ id_sede = 1)
+) = 1;
 
 SELECT * FROM Detalle1;
+
 ```
