@@ -37,12 +37,6 @@ precio decimal(10,2) not null,
 id_estado int not null
 )
 
-create table Cliente_Operativo
-(
-id_cliente int not null,
-nombre varchar(100) not null,
-apellido varchar(100) not null
-)
 
 /*--------------------------------------------*/
 -- Creacin de PKs
@@ -63,10 +57,6 @@ pk_id_producto primary key (id_producto)
 alter table Producto add constraint 
 fk_producto_estado foreign key (id_estado) 
 references Estado_Animo(id_estado)
-
--- Cliente Operativo
-alter table Cliente_Operativo add constraint 
-pk_id_cliente_operativo primary key (id_cliente)
 
 /*--------------------------------------------*/
 ------ RECUPERAR DATOS DE MOODCOFFEE --------
@@ -90,15 +80,10 @@ select * from Moodcoffee_GDB.dbo.Producto
 
 select * from Producto
 
- -- tabla Cliente_Operativo
-insert into MoodCoffee_DBNorte.dbo.Cliente_Operativo
-select * from Moodcoffee_GDB.dbo.Cliente_Operativo
-select * from Cliente_Operativo
 
 select * from Sede
 select * from Estado_Animo
 select * from Producto
-select * from Cliente_Operativo
 ```
 
 ## Fragmetacion
@@ -106,6 +91,27 @@ select * from Cliente_Operativo
 ```sql
 --- Fragmetacion vertical
 use MoodCoffee_DBNorte
+
+-- ==========================================
+--              Cliente_Datos
+-- ==========================================
+-- Creamos La tabla Cliente_Operativo
+create table Cliente_Operativo
+(
+id_cliente int not null,
+nombre varchar(100) not null,
+apellido varchar(100) not null
+)
+
+-- pk Cliente Operativo
+alter table Cliente_Operativo add constraint 
+pk_id_cliente_operativo primary key (id_cliente)
+
+-- Insertar datos Cliente Operativo
+insert into MoodCoffee_DBNorte.dbo.Cliente_Operativo
+select id_cliente,nombre,apellido from Moodcoffee_GDB.dbo.Cliente
+
+select * from Cliente_Operativo
 
 -- ==========================================
 --              Cliente_Datos
