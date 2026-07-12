@@ -128,3 +128,108 @@ ALTER TABLE Producto
     REFERENCES Estado_Animo(id_estado);
 GO
 ```
+
+
+## Script Actualizado para el del Sur y ver si funciona
+
+```sql
+USE MoodCoffee_DBSur;
+GO
+
+-- =========================================================================
+-- 1. Consumo_Operativo2 (Fragmentación Mixta Directa - Sede Sur)
+-- =========================================================================
+CREATE TABLE Consumo_Operativo2 (
+    id_consumo INT NOT NULL,
+    fecha      DATE NOT NULL,
+    id_cliente INT NOT NULL,
+    id_sede    INT NOT NULL
+);
+GO
+
+-- Creación de la PK Compuesta (Incluye campo de fragmentación)
+ALTER TABLE Consumo_Operativo2 
+ADD CONSTRAINT pk_id_consumo_id_sede2 PRIMARY KEY (id_consumo, id_sede);
+GO
+
+-- FK con las tablas del catálogo local de la Sede Sur
+ALTER TABLE Consumo_Operativo2 
+ADD CONSTRAINT fk_consumo2_sede FOREIGN KEY (id_sede) REFERENCES Sede(id_sede);
+
+ALTER TABLE Consumo_Operativo2 
+ADD CONSTRAINT fk_consumo2_cliente FOREIGN KEY (id_cliente) REFERENCES Cliente_Operativo(id_cliente);
+GO
+
+-- Inserción directa en 4 partes aplicando Proyección y Selección (id_sede = 2)
+INSERT INTO MoodCoffee_DBSur.dbo.Consumo_Operativo2 (id_consumo, fecha, id_cliente, id_sede)
+SELECT id_consumo, fecha, id_cliente, id_sede
+FROM [XANDER27HALF].[Moodcoffee_GDB].[dbo].[Consumo]
+WHERE id_sede = 2; 
+GO
+
+-- Verificación del fragmento operativo del Sur
+SELECT * FROM Consumo_Operativo2;
+GO
+
+
+-- =========================================================================
+-- 2. Detalle2 (Fragmentación Horizontal Derivada - Sede Sur)
+-- =========================================================================
+IF OBJECT_ID('Detalle2', 'U') IS NOT NULL DROP TABLE Detalle2;
+GO
+
+CREATE TABLE Detalle2 (
+    id_linea     INT NOT NULL,  -- Adaptado al cambio de nombre id_linea
+    id_consumo   INT NOT NULL,
+    id_sede      INT NOT NULL,  
+    cantidad     INT NOT NULL,
+    subtotal     DECIMAL(10,2) NOT NULL,
+    id_producto  INT NOT NULL
+);
+GO
+
+-- PK del fragmento derivado local
+ALTER TABLE Detalle2 
+ADD CONSTRAINT pk_id_linea_id_consumo_id_sede2 PRIMARY KEY (id_linea, id_consumo, id_sede);
+GO
+
+-- FK amarrada hacia Consumo_Operativo2
+ALTER TABLE Detalle2 
+ADD CONSTRAINT fk_idconsumo_idsede2 FOREIGN KEY (id_consumo, id_sede)
+REFERENCES Consumo_Operativo2(id_consumo, id_sede);
+
+-- Enlace con el catálogo local de Productos en el Sur
+ALTER TABLE Detalle2 
+ADD CONSTRAINT fk_detalle2_producto FOREIGN KEY (id_producto) REFERENCES Producto(id_producto);
+GO
+
+-- Inserción de datos en 4 partes aplicando tu lógica original de Semijoin
+INSERT INTO MoodCoffee_DBSur.dbo.Detalle2 (id_linea, id_consumo, id_sede, cantidad, subtotal, id_producto)
+SELECT 
+    gdb_det.id_linea, -- Usando el nuevo nombre tras el rename
+    gdb_det.id_consumo, 
+    2, 
+    gdb_det.cantidad, 
+    gdb_det.subtotal, 
+    gdb_det.id_producto
+FROM [XANDER27HALF].[Moodcoffee_GDB].[dbo].[Detalle_Consumo] gdb_det
+WHERE (
+    SELECT central_con.id_sede 
+    FROM [XANDER27HALF].[Moodcoffee_GDB].[dbo].[Consumo] central_con
+    WHERE gdb_det.id_consumo = central_con.id_consumo
+) = 2;
+GO
+
+-- Verificación del fragmento derivado local
+SELECT * FROM Detalle2;
+GO
+
+
+-- =========================================================================
+-- 3. Restricciones adicionales del catálogo local
+-- =========================================================================
+ALTER TABLE Producto 
+ADD CONSTRAINT fk_producto_estado_sur FOREIGN KEY (id_estado) 
+REFERENCES Estado_Animo(id_estado);
+GO
+```
