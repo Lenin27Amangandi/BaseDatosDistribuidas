@@ -218,7 +218,19 @@ SELECT * FROM Consumo;
 SELECT * FROM Detalle_Consumo;
 ```
 
+## Cambio de nombre al un campo de la tabla
+```sql
+USE Moodcoffee_GDB;
+GO
 
+-- Cambiamos el nombre de la columna id_detalle a id_linea
+EXEC sp_rename 'dbo.Detalle_Consumo.id_detalle', 'id_linea', 'COLUMN';
+GO
+
+-- Verificamos que el cambio se haya realizado correctamente
+SELECT * FROM Detalle_Consumo;
+GO
+```
 
 
 
