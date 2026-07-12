@@ -151,3 +151,10 @@ SET nombre = 'Camila',
 WHERE id_cliente = 4
 select * from Cliente_Operativo
 ```
+
+## Verificar si esta vinculado un servidor 
+```sql
+SELECT name, product, provider, data_source 
+FROM sys.servers 
+WHERE is_linked = 1;
+```
