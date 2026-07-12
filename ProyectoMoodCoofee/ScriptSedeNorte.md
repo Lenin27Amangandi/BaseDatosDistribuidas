@@ -165,62 +165,41 @@ select id_consumo,total from Moodcoffee_GDB.dbo.Consumo
 
 select * from Consumo_Financiero
 
-
--- ==========================================
---              Consumo_Operativo_Base
--- ==========================================
-
-----CREATE TABLE Consumo 
-----(
-----    id_consumo INT NOT NULL,
-----    fecha DATE NOT NULL,
-----    id_cliente INT NOT NULL,
-----    id_sede INT NOT NULL
-----);
-drop table Consumo_Operativo_Base
-CREATE TABLE Consumo_Operativo_Base 
-(
-    id_consumo INT NOT NULL,
-    fecha DATE NOT NULL,
-    id_cliente INT NOT NULL,
-    id_sede INT NOT NULL
-);
-
-alter table Consumo_Operativo_Base add constraint 
-pk_id_consumo_OB primary key (id_consumo)
-
--- Insertar datos 
-insert into MoodCoffee_DBNorte.dbo.Consumo_Operativo_Base
-select id_consumo,fecha,id_cliente,id_sede from Moodcoffee_GDB.dbo.Consumo
-
-select * from Consumo_Operativo_Base
-
-
 -- ==========================================
 --              Consumo_Operativo1
 -- ==========================================
 
--- Se crea con la misma estructura que la base
-drop table Consumo_Operativo1
+-- 1. Creamos directamente Consumo_Operativo1 sin tablas intermedias
 CREATE TABLE Consumo_Operativo1 (
     id_consumo INT NOT NULL,
     fecha DATE NOT NULL,
     id_cliente INT NOT NULL,
     id_sede INT NOT NULL
 );
+GO
 
-alter table Consumo_Operativo1 add constraint 
-pk_id_consumo_id_sede primary key (id_consumo,id_sede)
+-- 2. Añadimos la Clave Primaria compuesta (incluye el campo de fragmentación)
+ALTER TABLE Consumo_Operativo1 
+ADD CONSTRAINT pk_id_consumo_id_sede1 PRIMARY KEY (id_consumo, id_sede);
+GO
 
+-- 3. Añadimos las Llaves Foráneas para cuidar la integridad en el Norte
+-- NOTA:id_cliente apunta a la tabla 'Cliente_Operativo' que acabamos de crear antes
+ALTER TABLE Consumo_Operativo1 
+ADD CONSTRAINT fk_consumo_cliente1 FOREIGN KEY (id_cliente) 
+REFERENCES Cliente_Operativo(id_cliente);
+GO
 
--- Inserción aplicando la condición de fragmentación horizontal: σ id_sede = 1
-INSERT INTO Consumo_Operativo1 (id_consumo, fecha, id_cliente, id_sede)
-SELECT id_consumo, fecha, id_cliente, id_sede
-FROM Consumo_Operativo_Base
+-- 4. Insertamos directo aplicando la Proyección y el Filtro (id_sede = 1)
+INSERT INTO MoodCoffee_DBNorte.dbo.Consumo_Operativo1 (id_consumo, fecha, id_cliente, id_sede)
+SELECT id_consumo, fecha, id_cliente, id_sede 
+FROM Moodcoffee_GDB.dbo.Consumo
 WHERE id_sede = 1;
+GO
 
--- Verificación del fragmento
+-- 5. Verificación final del fragmento en el Norte
 SELECT * FROM Consumo_Operativo1;
+GO
 
 -- ==========================================
 --              Detalle1
