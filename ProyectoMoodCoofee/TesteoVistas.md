@@ -1,3 +1,27 @@
+## Eliminacion de vistas
+
+```sql
+USE MoodCoffee_DBNorte;
+GO
+
+-- 1. Eliminar la vista con el nombre antiguo si existe
+IF OBJECT_ID('v_Detalle_Consumo', 'V') IS NOT NULL 
+    DROP VIEW v_Detalle_Consumo;
+GO
+
+-- 2. Crear la vista con el nuevo nombre (Ejemplo: v_Detalle_Factura_Global)
+CREATE VIEW v_Detalle_Factura_Global
+AS
+    -- Segmento Local: Sede Norte
+    SELECT * FROM [XANDER27HALF].MoodCoffee_DBNorte.dbo.Detalle1
+    
+    UNION ALL
+    
+    -- Segmento Remoto: Sede Sur
+    SELECT * FROM [DESKTOP-KDT9TQQ].[MoodCoffee_DBSur].[dbo].[Detalle2];
+GO
+```
+
 ## Creación
 ```sql
 USE MoodCoffee_DBNorte;
