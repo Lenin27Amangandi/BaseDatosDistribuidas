@@ -70,3 +70,19 @@ AS
     SELECT * FROM [DESKTOP-KDT9TQQ].[MoodCoffee_DBSur].[dbo].[Detalle2];
 GO
 ```
+
+## Testeos 
+
+```sql
+USE MoodCoffee_DBNorte;
+GO
+
+SET XACT_ABORT ON; -- Regla obligatoria de tu bibliografía
+GO
+
+-- UPDATE Implícito (SQL Server maneja la transacción por detrás)[cite: 1]
+UPDATE v_Consumo_Operativo
+SET fecha = '2026-06-15'
+WHERE id_consumo = 3 AND id_sede = 1;
+GO
+```
