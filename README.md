@@ -154,6 +154,42 @@ select * from Cliente_Operativo
 
 ## Verificar si esta vinculado un servidor 
 ```sql
+
+-- Vista Particionada
+create view V_estudiante
+as
+select * from [WIN-SV9B62R4P0H].MEC.dbo.estudianteMEC
+union all
+select * from [WIN-PE2VUVLTL62].SIS.dbo.estudianteSIS
+
+select * from V_estudiante
+
+CLASE 16/07/2026
+
+-- Vista Matricula
+CREATE VIEW V_matricula
+AS
+SELECT * FROM [WIN-SV9B62R4P0H].[MEC].[dbo].[matriculaMEC]
+UNION ALL
+SELECT * FROM [WIN-PE2VUVLTL62].[SIS].[dbo].[matriculaSIS]
+
+select * from V_matricula
+
+-- Consulta
+SELECT
+    e.nombre,
+    e.apellido,
+    m.idmat
+FROM V_estudiante e
+JOIN V_matricula m
+    ON e.cc = m.cc
+WHERE m.idmat IN
+(
+    SELECT idmat
+    FROM V_matricula
+    GROUP BY idmat
+    HAVING COUNT(DISTINCT idfac) = 2
+);
 SELECT name, product, provider, data_source 
 FROM sys.servers 
 WHERE is_linked = 1;
