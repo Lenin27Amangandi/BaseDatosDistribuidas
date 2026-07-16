@@ -158,9 +158,9 @@ select * from Cliente_Operativo
 -- Vista Particionada
 create view V_estudiante
 as
-select * from [WIN-SV9B62R4P0H].MEC.dbo.estudianteMEC
+select * from [NOMBRE_SERVIDOR].MEC.dbo.estudianteMEC
 union all
-select * from [WIN-PE2VUVLTL62].SIS.dbo.estudianteSIS
+select * from [NOMBRE_SERVIDOR].SIS.dbo.estudianteSIS
 
 select * from V_estudiante
 
