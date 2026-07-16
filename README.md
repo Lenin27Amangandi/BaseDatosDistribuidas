@@ -169,9 +169,9 @@ CLASE 16/07/2026
 -- Vista Matricula
 CREATE VIEW V_matricula
 AS
-SELECT * FROM [WIN-SV9B62R4P0H].[MEC].[dbo].[matriculaMEC]
+SELECT * FROM [NOMBRE_SERVIDOR].[MEC].[dbo].[matriculaMEC]
 UNION ALL
-SELECT * FROM [WIN-PE2VUVLTL62].[SIS].[dbo].[matriculaSIS]
+SELECT * FROM [NOMBRE_SERVIDOR].[SIS].[dbo].[matriculaSIS]
 
 select * from V_matricula
 
