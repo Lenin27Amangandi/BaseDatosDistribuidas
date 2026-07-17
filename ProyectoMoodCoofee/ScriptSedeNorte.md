@@ -265,11 +265,14 @@ SELECT * FROM Detalle1;
 USE MoodCoffee_DBNorte;
 GO
 
--- Añadimos la nueva llave foránea en Consumo_Operativo1 para conectarla con Cliente_Datos
-ALTER TABLE Consumo_Operativo1
-ADD CONSTRAINT fk_consumo1_cliente_datos FOREIGN KEY (id_cliente) 
-REFERENCES Cliente_Datos(id_cliente);
+-- Creamos la relación para que cada registro en Cliente_Datos 
+-- obligatoriamente pertenezca a un Cliente_Operativo en este nodo
+ALTER TABLE Cliente_Datos
+ADD CONSTRAINT fk_cliente_datos_operativo FOREIGN KEY (id_cliente) 
+REFERENCES Cliente_Operativo(id_cliente);
 GO
+
+sp_help Cliente_Datos
 
 USE MoodCoffee_DBNorte;
 GO
