@@ -196,7 +196,9 @@ SELECT name, product, provider, data_source
 FROM sys.servers 
 WHERE is_linked = 1;
 ```
+
 # Clase 17/07/2026
+```sql
 WITH MateriasComunes AS
 (
     -- Obtenemos las materias que existen en ambas facultades (MEC y SIS)
@@ -220,3 +222,4 @@ INNER JOIN V_matricula m
     ON e.cc = m.cc
 INNER JOIN MateriasComunes mc 
     ON m.idmat = mc.idmat;
+```
