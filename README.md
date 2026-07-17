@@ -190,7 +190,33 @@ WHERE m.idmat IN
     GROUP BY idmat
     HAVING COUNT(DISTINCT idfac) = 2
 );
+
+
 SELECT name, product, provider, data_source 
 FROM sys.servers 
 WHERE is_linked = 1;
 ```
+# Clase 17/07/2026
+WITH MateriasComunes AS
+(
+    -- Obtenemos las materias que existen en ambas facultades (MEC y SIS)
+    SELECT idmat
+    FROM V_matricula
+    GROUP BY idmat
+    HAVING COUNT(DISTINCT idfac) = 2
+)
+SELECT 
+    e.nombre,
+    e.apellido,
+    m.idmat,
+    -- Traducimos el idfac al nombre del origen correspondiente
+    CASE 
+        WHEN m.idfac = 1 THEN 'MEC' -- Reemplaza 1 por el ID real de MEC si es numérico
+        WHEN m.idfac = 2 THEN 'SIS' -- Reemplaza 2 por el ID real de SIS si es numérico
+        ELSE CAST(m.idfac AS VARCHAR) -- Por si idfac ya contiene el texto 'MEC'/'SIS'
+    END AS origen
+FROM V_estudiante e
+INNER JOIN V_matricula m 
+    ON e.cc = m.cc
+INNER JOIN MateriasComunes mc 
+    ON m.idmat = mc.idmat;
