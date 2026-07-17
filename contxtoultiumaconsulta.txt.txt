@@ -1,0 +1,504 @@
+# Contexto completo del proyecto: Integración SQL Server MEC + SIS mediante Linked Server
+
+## Descripción general
+
+Se tienen dos bases de datos independientes en SQL Server:
+
+- Base de datos **MEC** (Facultad de Mecánica).
+- Base de datos **SIS** (otro sistema/facultad).
+
+Se configuró un **Linked Server** para que MEC pueda consultar información de SIS mediante:
+
+```
+[WIN-RJBV795UJE8].[SIS].[dbo].[tabla]
+```
+
+El objetivo es consultar estudiantes que tengan materias matriculadas en ambas facultades.
+
+La relación principal entre los sistemas se realiza mediante:
+
+```
+idmat
+```
+
+Es decir, una materia se considera común si existe el mismo `idmat` en:
+
+- `matriculaMEC`
+- `matriculaSIS`
+
+---
+
+# Problema inicial encontrado
+
+Se intentó crear una vista:
+
+```sql
+USE SIS
+
+CREATE VIEW V_matricula
+AS
+SELECT *
+FROM [WIN-JEAMMFTDC9V].[MEC].[dbo].[matriculaMEC]
+
+UNION ALL
+
+SELECT *
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS]
+```
+
+Pero SQL Server mostró:
+
+```
+Msg 111, Level 15, State 1
+'CREATE VIEW' must be the first statement in a query batch.
+```
+
+## Causa
+
+En SQL Server, `CREATE VIEW` debe ser la primera instrucción del lote.
+
+`USE SIS` estaba antes del `CREATE VIEW`.
+
+## Solución
+
+Separar los bloques con `GO`:
+
+```sql
+USE SIS;
+GO
+
+CREATE VIEW dbo.V_matricula
+AS
+SELECT *
+FROM [WIN-JEAMMFTDC9V].[MEC].[dbo].[matriculaMEC]
+
+UNION ALL
+
+SELECT *
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS];
+GO
+```
+
+---
+
+# Consulta inicial para encontrar materias comunes
+
+La consulta utilizada fue:
+
+```sql
+USE MEC;
+GO
+
+WITH MateriasComunes AS
+(
+    SELECT DISTINCT mMEC.idmat
+    FROM dbo.matriculaMEC AS mMEC
+    WHERE EXISTS
+    (
+        SELECT 1
+        FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS] AS mSIS
+        WHERE mSIS.idmat = mMEC.idmat
+    )
+)
+
+SELECT
+    eMEC.nombre,
+    eMEC.apellido,
+    mMEC.idmat,
+    'MEC' AS origen
+FROM dbo.matriculaMEC AS mMEC
+INNER JOIN dbo.estudianteMEC AS eMEC
+    ON eMEC.CC = mMEC.CC
+INNER JOIN MateriasComunes AS mc
+    ON mc.idmat = mMEC.idmat
+
+UNION ALL
+
+SELECT
+    eSIS.nombre,
+    eSIS.apellido,
+    mSIS.idmat,
+    'SIS' AS origen
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS] AS mSIS
+INNER JOIN [WIN-RJBV795UJE8].[SIS].[dbo].[estudianteSIS] AS eSIS
+    ON eSIS.CC = mSIS.CC
+INNER JOIN MateriasComunes AS mc
+    ON mc.idmat = mSIS.idmat;
+GO
+```
+
+---
+
+# Problema: la consulta devolvía vacío
+
+## Causa
+
+No existía ninguna materia (`idmat`) registrada en ambos sistemas.
+
+La consulta dependía de esta condición:
+
+```sql
+mMEC.idmat = mSIS.idmat
+```
+
+Por lo tanto, debía existir una materia igual en ambas bases.
+
+Ejemplo:
+
+MEC:
+
+```
+idmat = 003
+```
+
+SIS:
+
+```
+idmat = 003
+```
+
+---
+
+# Verificación de datos
+
+Se revisaron las tablas:
+
+```sql
+SELECT *
+FROM matriculaMEC;
+
+
+SELECT *
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS];
+```
+
+También se comprobó si existían materias comunes:
+
+```sql
+SELECT DISTINCT idmat
+FROM dbo.matriculaMEC
+
+INTERSECT
+
+SELECT DISTINCT idmat
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS];
+```
+
+---
+
+# Inserción de datos de prueba en MEC
+
+La tabla `matriculaMEC` tenía la siguiente estructura:
+
+```
+cc        char(10)
+idmat     char(3)
+Idfac     char(3)
+fechamt   date
+valorpag  numeric(7,2)
+```
+
+Restricciones:
+
+## Clave primaria:
+
+```
+(cc,idmat,idfac)
+```
+
+## Llave foránea estudiante:
+
+```
+(cc,idfac)
+REFERENCES estudianteMEC(cc,idfac)
+```
+
+## Llave foránea materia:
+
+```
+(idmat,idfac)
+REFERENCES materiaMEC(idmat,idfac)
+```
+
+## Restricción:
+
+```
+idfac = 'MEC'
+```
+
+---
+
+# Error al insertar materia
+
+Se intentó:
+
+```sql
+INSERT INTO materiaMEC
+VALUES
+('003','Materia3',2,'MEC');
+```
+
+Resultado:
+
+```
+Violation of PRIMARY KEY constraint 'pk_idmat'
+
+The duplicate key value is (003,MEC)
+```
+
+## Causa
+
+La materia ya existía:
+
+```
+idmat = 003
+idfac = MEC
+```
+
+No era necesario volver a insertarla.
+
+---
+
+# Inserción del estudiante MEC
+
+La tabla estudianteMEC tenía registros como:
+
+```
+001 | 2024001 | Pedro | Paramo | MEC
+```
+
+Se creó un nuevo estudiante:
+
+```sql
+INSERT INTO estudianteMEC
+VALUES
+('007','2024007','Juan','Pérez','MEC');
+```
+
+---
+
+# Inserción de matrícula MEC
+
+Después de tener:
+
+- estudiante 007 creado.
+- materia 003 existente.
+
+Se insertó:
+
+```sql
+INSERT INTO matriculaMEC
+VALUES
+('007','003','MEC','2024-10-10',50);
+```
+
+Esta inserción funcionó correctamente.
+
+Resultado:
+
+```
+cc     idmat    idfac
+007    003      MEC
+```
+
+---
+
+# Inserción de datos en SIS
+
+Para que la consulta funcionara era necesario crear la misma materia en SIS.
+
+La condición era:
+
+```
+idmat = 003
+```
+
+---
+
+## Verificar materia SIS
+
+```sql
+SELECT *
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[materiaSIS]
+WHERE idmat='003';
+```
+
+Si no existía:
+
+```sql
+INSERT INTO [WIN-RJBV795UJE8].[SIS].[dbo].[materiaSIS]
+VALUES
+('003','Materia3',2,'SIS');
+```
+
+---
+
+# Crear estudiante SIS
+
+Se utilizó otro código porque 008 ya existía.
+
+Nuevo estudiante:
+
+```sql
+INSERT INTO [WIN-RJBV795UJE8].[SIS].[dbo].[estudianteSIS]
+VALUES
+('009','2024009','Carlos','Lopez','SIS');
+```
+
+---
+
+# Crear matrícula SIS
+
+Se matriculó al estudiante 009 en la materia común 003:
+
+```sql
+INSERT INTO [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS]
+VALUES
+('009','003','SIS','2024-10-10',50);
+```
+
+Resultado esperado:
+
+SIS:
+
+```
+cc     idmat    idfac
+009    003      SIS
+```
+
+---
+
+# Estado final de los datos
+
+## MEC
+
+Estudiante:
+
+```
+007 | 2024007 | Juan | Pérez | MEC
+```
+
+Materia:
+
+```
+003 | Materia3 | MEC
+```
+
+Matrícula:
+
+```
+007 | 003 | MEC | 2024-10-10 | 50
+```
+
+
+## SIS
+
+Estudiante:
+
+```
+009 | 2024009 | Carlos | Lopez | SIS
+```
+
+Materia:
+
+```
+003 | Materia3 | SIS
+```
+
+Matrícula:
+
+```
+009 | 003 | SIS | 2024-10-10 | 50
+```
+
+---
+
+# Resultado esperado
+
+Ahora la consulta distribuida debe encontrar la materia común:
+
+```
+idmat = 003
+```
+
+y devolver:
+
+| nombre | apellido | idmat | origen |
+|---|---|---|---|
+| Juan | Pérez | 003 | MEC |
+| Carlos | Lopez | 003 | SIS |
+
+---
+
+# Consultas finales de verificación
+
+## Verificar MEC
+
+```sql
+SELECT *
+FROM matriculaMEC
+WHERE idmat='003';
+```
+
+## Verificar SIS
+
+```sql
+SELECT *
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS]
+WHERE idmat='003';
+```
+
+## Ejecutar consulta final
+
+```sql
+WITH MateriasComunes AS
+(
+    SELECT DISTINCT mMEC.idmat
+    FROM dbo.matriculaMEC AS mMEC
+    WHERE EXISTS
+    (
+        SELECT 1
+        FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS] AS mSIS
+        WHERE mSIS.idmat = mMEC.idmat
+    )
+)
+
+SELECT
+    eMEC.nombre,
+    eMEC.apellido,
+    mMEC.idmat,
+    'MEC' AS origen
+FROM dbo.matriculaMEC mMEC
+JOIN dbo.estudianteMEC eMEC
+ON eMEC.cc=mMEC.cc
+JOIN MateriasComunes mc
+ON mc.idmat=mMEC.idmat
+
+UNION ALL
+
+SELECT
+    eSIS.nombre,
+    eSIS.apellido,
+    mSIS.idmat,
+    'SIS'
+FROM [WIN-RJBV795UJE8].[SIS].[dbo].[matriculaSIS] mSIS
+JOIN [WIN-RJBV795UJE8].[SIS].[dbo].[estudianteSIS] eSIS
+ON eSIS.cc=mSIS.cc
+JOIN MateriasComunes mc
+ON mc.idmat=mSIS.idmat;
+```
+
+---
+
+# Conclusión
+
+El problema inicial no era la consulta, sino que no existían datos relacionados entre ambos nodos.
+
+La solución fue:
+
+1. Crear estudiantes en ambos sistemas.
+2. Usar la misma materia (`idmat=003`) en ambas facultades.
+3. Crear matrículas asociadas.
+4. Consultar mediante Linked Server usando `idmat` como campo común.
+
+Con esto la integración MEC-SIS funciona correctamente.
